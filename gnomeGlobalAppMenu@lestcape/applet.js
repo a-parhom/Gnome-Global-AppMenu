@@ -10,10 +10,12 @@ const Gtk = imports.gi.Gtk;
 const Gdk = imports.gi.Gdk;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
+const GObject = imports.gi.GObject;
 
 const Main = imports.ui.main;
 const Util = imports.misc.util;
 const ModalDialog = imports.ui.modalDialog;
+const State = imports.ui.modalDialog.State;
 const DND = imports.ui.dnd;
 
 const ExtensionSystem = imports.ui.extensionSystem;
@@ -72,7 +74,7 @@ KeybindingManager.prototype = {
                             let handler = keyBinds[pos]["handler"];
                             let kb = null; //FIXME: What it's this a keyboard map, the active keyboard state?
                             let event = Clutter.get_current_event(); // This is the current keyboard event-
-                            handler(display, global.screen, event, kb, actionPreformed);
+                            handler(display, global.display, event, kb, actionPreformed);
                         }
                     }
                 }
@@ -88,7 +90,7 @@ KeybindingManager.prototype = {
         this._custom_keybindings[name] = [];
         let modes = Shell.ActionMode.ALL;
         for (let pos in bindings) {
-            let action = global.display.grab_accelerator(bindings[pos]);
+            let action = global.display.grab_accelerator(bindings[pos],0);
             this._custom_keybindings[name].push({ "action": action, "handler": handler });
             if (action != Meta.KeyBindingAction.NONE) {
                 Main.wm.allowKeybinding(Meta.external_binding_name_for_action(action), modes);
@@ -208,9 +210,9 @@ KeybindingManager.prototype = {
         if(event) {
             this.keyGrab = event.get_key_symbol();
             if(MOD_MASK.indexOf(event.get_key_symbol()) == -1) {
-                callback(display, global.screen, event, kb, actionPreformed);
+                callback(display, global.display, event, kb, actionPreformed);
             } else if (event.type() == Clutter.EventType.KEY_RELEASE) {
-                callback(display, global.screen, event, kb, actionPreformed);
+                callback(display, global.display, event, kb, actionPreformed);
             } else {
                 if (event.type() == Clutter.EventType.KEY_PRESS) {
                     this.grabFocus = global.stage.key_focus;
@@ -300,21 +302,27 @@ KeybindingManager.prototype = {
  * This is usually used by Cinnamon itself via an "About" right click menu, but
  * individual spices can also use this to open an about dialog if they wish.
  */
-function SpicesAboutDialog(metadata, type) {
-    this._init(metadata, type);
-}
 
-SpicesAboutDialog.prototype = {
-    __proto__: ModalDialog.ModalDialog.prototype,
-
+const SpicesAboutDialog = GObject.registerClass({
+    Properties: {
+        'state': GObject.ParamSpec.int('state', 'Dialog state', 'state',
+                                       GObject.ParamFlags.READABLE,
+                                       Math.min(...Object.values(State)),
+                                       Math.max(...Object.values(State)),
+                                       State.CLOSED)
+    },
+    Signals: { 'opened': {}, 'closed': {} }
+},
+class SpicesAboutDialog extends ModalDialog.ModalDialog {
     /**
      * _init:
      * metadata (JSON): the metadata object of the spice
      * type (string): the type of the spice, which should be "applet",
      * "desklet" or "extension"
      */
-    _init: function(metadata, type) {
+    _init(metadata, type) {
         ModalDialog.ModalDialog.prototype._init.call(this);
+        //super._init(metadata, type);
 
         //prepare translation
         this.uuid = metadata.uuid;
@@ -344,7 +352,7 @@ SpicesAboutDialog.prototype = {
         let topTextBox = new St.BoxLayout({vertical: true});
         topBox.add_actor(topTextBox);
         
-        /*title*/
+        //title
         let titleBox = new St.BoxLayout();
         topTextBox.add_actor(titleBox);
 
@@ -428,10 +436,10 @@ SpicesAboutDialog.prototype = {
         ]);
         
         this.open(global.get_current_time());
-    },
+    }
 
     // translation
-    _: function(str) {
+    _(str) {
         // look into the text domain first
         let translated = Gettext.dgettext(this.uuid, str);
 
@@ -440,17 +448,17 @@ SpicesAboutDialog.prototype = {
             return translated;
         // else, use the default cinnamon domain
         return _(str);
-    },
+    }
 
-    _onOk: function() {
+    _onOk() {
         this.close(global.get_current_time());
-    },
+    }
     
-    _launchSite: function(a, b, site) {
+    _launchSite(a, b, site) {
         Util.spawnCommandLine("xdg-open " + site);
         this.close(global.get_current_time());
     }
-}
+});
 
 /**
  * #AppletContextMenu

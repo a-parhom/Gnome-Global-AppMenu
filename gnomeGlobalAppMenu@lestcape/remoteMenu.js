@@ -6,7 +6,7 @@ const GObject = imports.gi.GObject;
 const Gio = imports.gi.Gio;
 const Lang = imports.lang;
 const Shell = imports.gi.Shell;
-const ShellMenu = imports.gi.ShellMenu;
+//const ShellMenu = imports.gi.ShellMenu;
 const St = imports.gi.St;
 
 const PopupMenu = imports.ui.popupMenu;
@@ -40,10 +40,10 @@ function _removeItem(menu, position) {
     items[position].destroy();
 }
 
-const RemoteMenuSeparatorItemMapper = new Lang.Class({
-    Name: 'RemoteMenuSeparatorItemMapper',
+//const RemoteMenuSeparatorItemMapper = new Lang.Class({
+class RemoteMenuSeparatorItemMapper { 
 
-    _init: function(trackerItem) {
+    _init(trackerItem) {
         this._trackerItem = trackerItem;
         this.menuItem = new ConfigurableMenus.ConfigurableSeparatorMenuItem();
         this._trackerItem.connect('notify::label', Lang.bind(this, this._updateLabel));
@@ -52,36 +52,36 @@ const RemoteMenuSeparatorItemMapper = new Lang.Class({
         this.menuItem.connect('destroy', function() {
             trackerItem.run_dispose();
         });
-    },
+    }
 
-    _updateLabel: function() {
+    _updateLabel() {
         //this.menuItem.label.text = stripMnemonics(this._trackerItem.label);
-    },
-});
+    }
+}
 
-const RequestSubMenu = new Lang.Class({
+/*const RequestSubMenu = new Lang.Class({
     Name: 'RequestSubMenu',
-    Extends: ConfigurableMenus.ConfigurablePopupSubMenuMenuItem,
-
-    _init: function() {
-        this.parent('');
+    Extends: ConfigurableMenus.ConfigurablePopupSubMenuMenuItem,*/
+class RequestSubMenu extends ConfigurableMenus.ConfigurablePopupSubMenuMenuItem {
+    _init() {
+        super.construct('');
         this._requestOpen = false;
-    },
+    }
 
-    _setOpenState: function(open) {
+    _setOpenState(open) {
         this.emit('request-open', open);
         this._requestOpen = open;
-    },
+    }
 
-    _getOpenState: function() {
+    _getOpenState() {
         return this._requestOpen;
-    },
-});
+    }
+}
 
-const RemoteMenuSubmenuItemMapper = new Lang.Class({
-    Name: 'RemoteMenuSubmenuItemMapper',
-
-    _init: function(trackerItem) {
+/*const RemoteMenuSubmenuItemMapper = new Lang.Class({
+    Name: 'RemoteMenuSubmenuItemMapper',*/
+class RemoteMenuSubmenuItemMapper {
+    _init(trackerItem) {
         this._trackerItem = trackerItem;
         this.menuItem = new RequestSubMenu();
         this._trackerItem.connect('notify::label', Lang.bind(this, this._updateLabel));
@@ -102,22 +102,23 @@ const RemoteMenuSubmenuItemMapper = new Lang.Class({
         this.menuItem.connect('destroy', function() {
             trackerItem.run_dispose();
         });
-    },
+    }
 
-    destroy: function() {
+    destroy() {
         this._tracker.destroy();
-        this.parent();
-    },
+        //super._init();
+        super.construct();
+    }
 
-    _updateLabel: function() {
+    _updateLabel() {
         this.menuItem.setText(stripMnemonics(this._trackerItem.label));
-    },
-});
+    }
+}
 
-const RemoteMenuItemMapper = new Lang.Class({
-    Name: 'RemoteMenuItemMapper',
-
-    _init: function(trackerItem) {
+/*const RemoteMenuItemMapper = new Lang.Class({
+    Name: 'RemoteMenuItemMapper',*/
+class RemoteMenuItemMapper  {
+    _init(trackerItem) {
         this._trackerItem = trackerItem;
         this._currentOrnament = ConfigurableMenus.OrnamentType.NONE;
 
@@ -144,24 +145,26 @@ const RemoteMenuItemMapper = new Lang.Class({
         this.menuItem.connect('destroy', function() {
             trackerItem.run_dispose();
         });
-    },
+    }
 
-    _updateIcon: function() {
+    _updateIcon() {
         this.menuItem.setGIcon(this._trackerItem.icon);
-    },
+    }
 
-    _updateLabel: function() {
+    _updateLabel() {
         this.menuItem.setText(stripMnemonics(this._trackerItem.label));
-    },
+    }
 
-    _updateSensitivity: function() {
+    _updateSensitivity() {
         this.menuItem.setSensitive(this._trackerItem.sensitive);
-    },
+    }
 
-    _updateDecoration: function() {
+    _updateDecoration() {
         let ornamentForRole = {};
-        ornamentForRole[ShellMenu.MenuTrackerItemRole.RADIO] = ConfigurableMenus.OrnamentType.DOT;
-        ornamentForRole[ShellMenu.MenuTrackerItemRole.CHECK] = ConfigurableMenus.OrnamentType.CHECK;
+        /*ornamentForRole[ShellMenu.MenuTrackerItemRole.RADIO] = ConfigurableMenus.OrnamentType.DOT;
+        ornamentForRole[ShellMenu.MenuTrackerItemRole.CHECK] = ConfigurableMenus.OrnamentType.CHECK;*/
+        ornamentForRole["radio"] = ConfigurableMenus.OrnamentType.DOT;
+        ornamentForRole["check"] = ConfigurableMenus.OrnamentType.CHECK;
 
         let ornament = ConfigurableMenus.OrnamentType.NONE;
         if (this._trackerItem.toggled)
@@ -172,20 +175,24 @@ const RemoteMenuItemMapper = new Lang.Class({
         else
             this.menuItem.setOrnament(ornament, false);
         this._currentOrnament = ornament;
-    },
+    }
 
-    _updateRole: function() {
+    _updateRole() {
         let a11yRoles = {};
-        a11yRoles[ShellMenu.MenuTrackerItemRole.NORMAL] = Atk.Role.MENU_ITEM;
+        /*a11yRoles[ShellMenu.MenuTrackerItemRole.NORMAL] = Atk.Role.MENU_ITEM;
         a11yRoles[ShellMenu.MenuTrackerItemRole.RADIO] = Atk.Role.RADIO_MENU_ITEM;
-        a11yRoles[ShellMenu.MenuTrackerItemRole.CHECK] = Atk.Role.CHECK_MENU_ITEM;
+        a11yRoles[ShellMenu.MenuTrackerItemRole.CHECK] = Atk.Role.CHECK_MENU_ITEM;*/
+
+        a11yRoles["normal"] = Atk.Role.MENU_ITEM;
+        a11yRoles["radio"] = Atk.Role.RADIO_MENU_ITEM;
+        a11yRoles["check"] = Atk.Role.CHECK_MENU_ITEM;
 
         let a11yRole = a11yRoles[this._trackerItem.role];
         this.menuItem.actor.accessible_role = a11yRole;
 
         this._updateDecoration();
-    },
-});
+    }
+}
 
 function RemoteMenu() {
    this._init.apply(this, arguments);

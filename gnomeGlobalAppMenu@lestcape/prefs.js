@@ -33,106 +33,109 @@ function _(str) {
     return Gettext.gettext(str);
 };
 
-const ClassicGnomePreferencesWidget = new GObject.Class({
+/*const ClassicGnomePreferencesWidget = new GObject.Class({
     Name: 'ClassicGnome.ClassicGnomePreferencesWidget',
-    GTypeName: 'ClassicGnomePreferencesWidget',
-    Extends: Gtk.Box,
-
-    _init: function(params) {
-        this.parent(params);
-        //this.settings = Convenience.getSettings('org.gnome.shell.extensions.classicGnome');
-        this.modulesManager = new ModulesLoader.ModulesManager(this);
-        this.modulesRequierd = ["get_side_page", "can_load_with_arguments"];
-        this.module = null;
-        this.content_box = new Gtk.Box({
-            orientation: Gtk.Orientation.VERTICAL
-        });
-        this.add(this.content_box);
-        this.connect('map', Lang.bind(this, this._loadModule));
+    Extends: Gtk.Box,*/
+const ClassicGnomePreferencesWidget = GObject.registerClass({    
+        GTypeName: 'ClassicGnomePreferencesWidget'
     },
-
-    navegate: function(widget, id) {
-        let module = this.modulesManager.getInstance(id);
-        if(module) {
-            let sidePage = module.get_side_page([], this.wind, this.content_box);
-            if(sidePage) {
-                this.subTitle = sidePage.name;
-                try {
-                    this.wind.set_icon_name(sidePage.icon);
-                } catch (e) {
-                    this.wind.set_icon_name('application-x-executable');
-                }
-                sidePage.build();
-            }
-            module.on_module_selected();
+    class ClassicGnomePreferencesWidget extends Gtk.Box {
+        _init(params) {
+            super._init(params);
+            //this.settings = Convenience.getSettings('org.gnome.shell.extensions.classicGnome');
+            this.modulesManager = new ModulesLoader.ModulesManager(this);
+            this.modulesRequierd = ["get_side_page", "can_load_with_arguments"];
+            this.module = null;
+            this.content_box = new Gtk.Box({
+                orientation: Gtk.Orientation.VERTICAL
+            });
+            this.add(this.content_box);
+            this.connect('map', Lang.bind(this, this._loadModule));
         }
-    },
 
-    _loadModule: function(widget, event) {
-        if(!this.module) {
-            try {
-                let modulePath = GLib.build_filenamev([MyExtension.dir.get_path(), 'settings', 'modules']);
-                this.modulesManager.scan(modulePath, "cg_", this.modulesRequierd);
-                for(let name in this.modulesManager.instances) {
-                    this.modulesManager.instances[name].set_handler(this);
+        navegate(widget, id) {
+            let module = this.modulesManager.getInstance(id);
+            if(module) {
+                let sidePage = module.get_side_page([], this.wind, this.content_box);
+                if(sidePage) {
+                    this.subTitle = sidePage.name;
+                    try {
+                        this.wind.set_icon_name(sidePage.icon);
+                    } catch (e) {
+                        this.wind.set_icon_name('application-x-executable');
+                    }
+                    sidePage.build();
                 }
-                this.module = this.modulesManager.getInstance("settings");
-                let argv = ["settings", "applet", MyExtension.uuid, MyExtension.uuid];
-                if(this.module && this.module.can_load_with_arguments(argv)) {
-                    this.wind = this.get_toplevel(); //this.wind.is_toplevel();
-                    this.sidePage = this.module.get_side_page(argv, this.get_toplevel(), this.content_box);
-                    if(this.sidePage) {
-                        if(this.sidePage.exec_name == "main") {
-                            for(let name in this.modulesManager.instances) {
-                                let sidep = this.modulesManager.instances[name].get_side_page(
-                                    argv, this.wind, this.content_box
-                                );
-                                if(sidep && (sidep !== undefined) && sidep.module.have_direct_link()) {
-                                    this.sidePage.addModuleSidePage(sidep,
-                                        this.modulesManager.instances[name].name,
-                                        this.modulesManager.instances[name].category
+                module.on_module_selected();
+            }
+        }
+
+        _loadModule(widget, event) {
+            if(!this.module) {
+                try {
+                    let modulePath = GLib.build_filenamev([MyExtension.dir.get_path(), 'settings', 'modules']);
+                    this.modulesManager.scan(modulePath, "cg_", this.modulesRequierd);
+                    for(let name in this.modulesManager.instances) {
+                        this.modulesManager.instances[name].set_handler(this);
+                    }
+                    this.module = this.modulesManager.getInstance("settings");
+                    let argv = ["settings", "applet", MyExtension.uuid, MyExtension.uuid];
+                    if(this.module && this.module.can_load_with_arguments(argv)) {
+                        this.wind = this.get_toplevel(); //this.wind.is_toplevel();
+                        this.sidePage = this.module.get_side_page(argv, this.get_toplevel(), this.content_box);
+                        if(this.sidePage) {
+                            if(this.sidePage.exec_name == "main") {
+                                for(let name in this.modulesManager.instances) {
+                                    let sidep = this.modulesManager.instances[name].get_side_page(
+                                        argv, this.wind, this.content_box
                                     );
+                                    if(sidep && (sidep !== undefined) && sidep.module.have_direct_link()) {
+                                        this.sidePage.addModuleSidePage(sidep,
+                                            this.modulesManager.instances[name].name,
+                                            this.modulesManager.instances[name].category
+                                        );
+                                    }
                                 }
                             }
+                            this.module.on_module_selected();
+                            this.maybe_resize(this.sidePage);
                         }
-                        this.module.on_module_selected();
-                        this.maybe_resize(this.sidePage);
                     }
+                } catch(e) {
+                    global.notify("Error:", e.message, "dialog-error-symbolic");
                 }
-            } catch(e) {
-                global.notify("Error:", e.message, "dialog-error-symbolic");
             }
         }
-    },
 
-    maybe_resize: function(sidePage) {
-        let [m, n] = this.content_box.get_preferred_size();
-        this.bar_heights = 0;
+        maybe_resize(sidePage) {
+            let [m, n] = this.content_box.get_preferred_size();
+            this.bar_heights = 0;
 
-        // Resize horizontally if the module is wider than the window
-        let use_width = WIN_WIDTH;
-        if (n.width > WIN_WIDTH) {
-            use_width = n.width;
-        }
-        // Resize vertically depending on the height requested by the module
-        let use_height = WIN_HEIGHT;
-        let total_height = n.height + this.bar_heights + WIN_H_PADDING;
-        if (!sidePage.size) {
-            // No height requested, resize vertically if the module is taller than the window
-            if (total_height > WIN_HEIGHT) {
+            // Resize horizontally if the module is wider than the window
+            let use_width = WIN_WIDTH;
+            if (n.width > WIN_WIDTH) {
+                use_width = n.width;
+            }
+            // Resize vertically depending on the height requested by the module
+            let use_height = WIN_HEIGHT;
+            let total_height = n.height + this.bar_heights + WIN_H_PADDING;
+            if (!sidePage.size) {
+                // No height requested, resize vertically if the module is taller than the window
+                if (total_height > WIN_HEIGHT) {
+                    use_height = total_height;
+                }
+                //this.wind.resize(use_width, n.height + this.bar_heights + WIN_H_PADDING)
+            } else if (sidePage.size > 0) {
+                // Height hardcoded by the module
+                //use_height = sidePage.size + this.bar_heights + WIN_H_PADDING;
+            } else if (sidePage.size == -1) {
+                // Module requested the window to fit it (i.e. shrink the window if necessary)
                 use_height = total_height;
             }
-            //this.wind.resize(use_width, n.height + this.bar_heights + WIN_H_PADDING)
-        } else if (sidePage.size > 0) {
-            // Height hardcoded by the module
-            //use_height = sidePage.size + this.bar_heights + WIN_H_PADDING;
-        } else if (sidePage.size == -1) {
-            // Module requested the window to fit it (i.e. shrink the window if necessary)
-            use_height = total_height;
+            this.wind.resize(use_width, use_height);
         }
-        this.wind.resize(use_width, use_height);
-    },
-});
+    }
+);
 
 function init() {
     //Convenience.initTranslations();

@@ -1,6 +1,7 @@
 // -*- mode: js; js-indent-level: 4; indent-tabs-mode: nil -*-
 
 const Lang = imports.lang;
+const GObject = imports.gi.GObject;
 const Signals = imports.signals;
 const St = imports.gi.St;
 const Clutter = imports.gi.Clutter;
@@ -20,10 +21,10 @@ const ConfigurableMenus = MyExtension.imports.configurableMenus;
 const MAX_LIST_SEARCH_RESULTS_ROWS = 20;
 var hudSearchProvider = null;
 
-const HudSearchProvider = new Lang.Class({
-    Name: 'HudSearchProvider',
-
-    _init: function() {
+/*const HudSearchProvider = new Lang.Class({
+    Name: 'HudSearchProvider',*/
+class HudSearchProvider {
+    _init() {
         this.id = 'hud';
         this.name = "Gnome Hud";
         this.isEnabled = false;
@@ -33,11 +34,11 @@ const HudSearchProvider = new Lang.Class({
         this.appData = null;
         this._indicatorId = 0;
         this._focusId = 0;
-        this._hack();
-    },
+        //this._hack();
+    }
 
     // Hack, I don't know what is doing gnome... A missing function, this is intentional?
-    _hack: function() {
+    _hack() {
         Main.overview.viewSelector._real_addSearchProvider = Main.overview.viewSelector.addSearchProvider;
         if(!Main.overview.viewSelector.addSearchProvider) {
             Main.overview.viewSelector.addSearchProvider = function(searchProvider) {
@@ -50,25 +51,25 @@ const HudSearchProvider = new Lang.Class({
                 Main.overview.viewSelector._searchResults._unregisterProvider(searchProvider);
             };
         }
-    },
+    }
 
-    enable: function() {
+    enable() {
         if (!this.isEnabled) {
             this._hackDisplay(true);
-            Main.overview.addSearchProvider(this);
+            //Main.overview.addSearchProvider(this);
             this.isEnabled = true;
         }
-    },
+    }
 
-    disable: function() {
+    disable() {
         if (this.isEnabled) {
-            Main.overview.removeSearchProvider(this);
+            //Main.overview.removeSearchProvider(this);
             this._hackDisplay(false);
             this.isEnabled = false;
         }
-    },
+    }
 
-    setIndicator: function(indicator) {
+    setIndicator(indicator) {
         if(this.indicator != indicator) {
             if(this.indicator && (this._indicatorId > 0)) {
                 this.indicator.disconnect(this._indicatorId);
@@ -81,9 +82,9 @@ const HudSearchProvider = new Lang.Class({
             this.disable();
             this.enable();
         }
-    },
+    }
 
-    _onAppmenuChanged: function(indicator, window)  {
+    _onAppmenuChanged(indicator, window)  {
         this.appData = null;
         this.currentWindow = window;
         if(this.currentWindow && this.indicator && this.isEnabled) {
@@ -96,9 +97,9 @@ const HudSearchProvider = new Lang.Class({
                 };
             }
         }
-    },
+    }
 
-    _hackDisplay: function(hack) {
+    _hackDisplay(hack) {
         let sr = Main.overview.viewSelector._searchResults;
         if(sr && sr._content) {
             if(hack) {
@@ -123,18 +124,18 @@ const HudSearchProvider = new Lang.Class({
                 }
             }
         }
-    },
+    }
 
-    activateResult: function(id, terms) {
+    activateResult(id, terms) {
         if(this.indicator && this.appData && this.appData["dbusMenu"]) {
             let items = this.appData["dbusMenu"].getItems();
             if(id in items) {
                 items[id].active();
             }
         }
-    },
+    }
 
-    getResultMetas: function(items, callback) {
+    getResultMetas(items, callback) {
         let metas = [];
         if(this.indicator && this.appData && this.appData["dbusMenu"]) {
             let allItems = this.appData["dbusMenu"].getItems();
@@ -151,13 +152,13 @@ const HudSearchProvider = new Lang.Class({
             }
         }
         callback(metas);
-    },
+    }
 
-    filterResults: function(results, maxNumber) {
+    filterResults(results, maxNumber) {
         return results.slice(0, maxNumber);
-    },
+    }
 
-    _searchFor: function(item, terms) {
+    _searchFor(item, terms) {
         let label = item.getLabel().toLowerCase();
         for(let pos in terms) {
             if(label.indexOf(terms[pos].toLowerCase()) != -1) {
@@ -165,9 +166,9 @@ const HudSearchProvider = new Lang.Class({
             }
         }
         return 0;
-    },
+    }
 
-    getInitialResultSet: function(terms, callback, cancellable) {
+    getInitialResultSet(terms, callback, cancellable) {
         let results = [];
         if(this.indicator && this.appData && this.appData["dbusMenu"]) {
             let items = this.appData["dbusMenu"].getItems();
@@ -181,22 +182,22 @@ const HudSearchProvider = new Lang.Class({
             }
         }
         callback(results);
-    },
+    }
 
-    getSubsearchResultSet: function(previousResults, terms, callback, cancellable) {
+    getSubsearchResultSet(previousResults, terms, callback, cancellable) {
         this.getInitialResultSet(terms, callback, cancellable);
-    },
+    }
 
-    createResultObject: function (resultMeta) {
+    createResultObject(resultMeta) {
         if(this.indicator && this.appData &&
           ("dbusMenu" in this.appData) &&
           (resultMeta['id'] in this.appData["dbusMenu"])) {
            return this.appData["dbusMenu"][resultMeta['id']];
         }
         return null;
-    },
+    }
 
-    getIcon: function(size) {
+    getIcon(size) {
         let gicon = null;
         let iconTheme = Gtk.IconTheme.get_default();
         iconTheme.prepend_search_path(MyExtension.path);
@@ -209,13 +210,13 @@ const HudSearchProvider = new Lang.Class({
             gicon = Gio.icon_new_for_string(iconInfo.get_filename());
         }
         return gicon;
-    },
+    }
 
-    getName: function() {
+    getName() {
         return this.name;
-    },
+    }
 
-    destroy: function() {
+    destroy() {
         this.setIndicator(null);
         this.disable();
         this.id = null;
@@ -231,64 +232,74 @@ const HudSearchProvider = new Lang.Class({
             Main.overview.viewSelector.removeSearchProvider = Main.overview.viewSelector._real_removeSearchProvider;
             Main.overview.viewSelector._real_removeSearchProvider = null;
         }
-    },
-});
-
-const HudProviderIcon = new Lang.Class({
-    Name: 'HudProviderIcon',
-    Extends: St.Button,
-
-    PROVIDER_ICON_SIZE: 48,
-
-    _init: function(provider) {
-        this.provider = provider;
-        this.parent({
-            style_class: 'search-provider-icon',
-            reactive: true,
-            can_focus: true,
-            accessible_name: provider.getName(),
-            track_hover: true
-        });
-
-        this._content = new St.Widget({ layout_manager: new Clutter.BinLayout() });
-        this.set_child(this._content);
-
-        let rtl = (this.get_text_direction() == Clutter.TextDirection.RTL);
-
-        this.moreIcon = new St.Widget({
-            style_class: 'search-provider-icon-more',
-            visible: false,
-            x_align: rtl ? Clutter.ActorAlign.START : Clutter.ActorAlign.END,
-            y_align: Clutter.ActorAlign.END,
-            x_expand: true,
-            y_expand: true
-        });
-
-        this.icon = new St.Icon({
-            icon_size: this.PROVIDER_ICON_SIZE,
-            gicon: provider.getIcon(this.PROVIDER_ICON_SIZE)
-        });
-        this._content.add_actor(this.icon);
-        this._content.add_actor(this.moreIcon);
-    },
- 
-    setIcon: function(gicon) {
-        this.icon.set_gicon(gicon);
-    },
-
-    animateLaunch: function() {
-        IconGrid.zoomOutActor(this._content);
     }
-});
+}
 
-const HubListSearchResult = new Lang.Class({
+/*const HudProviderIcon = new Lang.Class({
+    Name: 'HudProviderIcon',
+    Extends: St.Button,*/
+
+const HudProviderIcon = GObject.registerClass(    
+    class HudProviderIcon extends St.Button {
+        
+        constructor() {
+            this.PROVIDER_ICON_SIZE = 48;
+        }
+
+        _init(provider) {
+            this.provider = provider;
+            super._init({
+                style_class: 'search-provider-icon',
+                reactive: true,
+                can_focus: true,
+                accessible_name: provider.getName(),
+                track_hover: true
+            });
+
+            this._content = new St.Widget({ layout_manager: new Clutter.BinLayout() });
+            this.set_child(this._content);
+
+            let rtl = (this.get_text_direction() == Clutter.TextDirection.RTL);
+
+            this.moreIcon = new St.Widget({
+                style_class: 'search-provider-icon-more',
+                visible: false,
+                x_align: rtl ? Clutter.ActorAlign.START : Clutter.ActorAlign.END,
+                y_align: Clutter.ActorAlign.END,
+                x_expand: true,
+                y_expand: true
+            });
+
+            this.icon = new St.Icon({
+                icon_size: this.PROVIDER_ICON_SIZE,
+                gicon: provider.getIcon(this.PROVIDER_ICON_SIZE)
+            });
+            this._content.add_actor(this.icon);
+            this._content.add_actor(this.moreIcon);
+        }
+     
+        setIcon(gicon) {
+            this.icon.set_gicon(gicon);
+        }
+
+        animateLaunch() {
+            IconGrid.zoomOutActor(this._content);
+        }
+    }
+);
+
+/*const HubListSearchResult = new Lang.Class({
     Name: 'HubListSearchResult',
-    Extends: Search.SearchResult,
+    Extends: Search.SearchResult,*/
 
-    ICON_SIZE: 32,
+class HubListSearchResult extends Search.SearchResult {    
 
-    _init: function(provider, metaInfo) {
-        this.parent(provider, metaInfo);
+    constructor() {
+        this.ICON_SIZE = 32;
+    }
+
+    _init(provider, metaInfo) {
+        super._init(provider, metaInfo);
 
         this.actor.style_class = 'list-search-result';
         this.actor.x_fill = true;
@@ -335,15 +346,17 @@ const HubListSearchResult = new Lang.Class({
                 y_align: St.Align.END
             });
         }
-    },
-});
+    }
+}
 
-const HudListSearchResults = new Lang.Class({
+/*const HudListSearchResults = new Lang.Class({
     Name: 'HudListSearchResults',
-    Extends: Search.SearchResultsBase,
+    Extends: Search.SearchResultsBase,*/
 
-    _init: function(provider) {
-        this.parent(provider);
+class HudListSearchResults extends Search.SearchResultsBase {       
+
+    _init(provider) {
+        super._init(provider);
 
         this._container = new St.BoxLayout({ style_class: 'search-section-content' });
         this.providerIcon = new HudProviderIcon(provider);
@@ -368,39 +381,39 @@ const HudListSearchResults = new Lang.Class({
         this._container.add(this._content, { expand: true });
 
         this._resultDisplayBin.set_child(this._container);
-    },
+    }
 
-    _setMoreIconVisible: function(visible) {
+    _setMoreIconVisible(visible) {
         this.providerIcon.moreIcon.visible = visible;
-    },
+    }
 
-    _getMaxDisplayedResults: function() {
+    _getMaxDisplayedResults() {
         return MAX_LIST_SEARCH_RESULTS_ROWS;
-    },
+    }
 
-    _clearResultDisplay: function () {
+    _clearResultDisplay() {
         this._content.remove_all_children();
-    },
+    }
 
-    _createResultDisplay: function(meta) {
-        return this.parent(meta) || new HubListSearchResult(this.provider, meta);
-    },
+    _createResultDisplay(meta) {
+        return super._init(meta) || new HubListSearchResult(this.provider, meta);
+    }
 
-    _addItem: function(display) {
+    _addItem(display) {
         this._content.add_actor(display.actor);
-    },
+    }
 
-    getFirstResult: function() {
+    getFirstResult() {
         if (this._content.get_n_children() > 0)
             return this._content.get_child_at_index(0)._delegate;
         return null;
-    },
+    }
 
-    destroy: function() {
+    destroy() {
         if (this.actor) {
-            this.parent();
+            super._init();
             this.actor = null;
         }
     }
-});
+}
 Signals.addSignalMethods(HudListSearchResults.prototype);

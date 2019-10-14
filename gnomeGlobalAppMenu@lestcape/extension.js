@@ -15,7 +15,7 @@ function init() {
 
 function enable() {
     if(!applet) {
-        applet = ExtensionManager.main(MyExtension.metadata, St.Side.TOP, Main.panel.actor.height, 1);
+        applet = ExtensionManager.main(MyExtension.metadata, St.Side.TOP, Main.panel.height, 1);
         GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, Lang.bind(this, function () {
             applet._onAppletAddedToPanel(false);
             applet.setOrientation(St.Side.TOP);

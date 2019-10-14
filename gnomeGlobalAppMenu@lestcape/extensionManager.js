@@ -884,7 +884,7 @@ MyApplet.prototype = {
    _onAppMenuNotify: function() {
        let visible = (this.targetApp != null &&
                       !Main.overview.visibleTarget &&
-                      this.targetApp.is_on_workspace(global.screen.get_active_workspace()));
+                      this.targetApp.is_on_workspace(global.workspace_manager.get_active_workspace()));
        if (visible) {
            this.actor.show();
        } else {
@@ -987,13 +987,13 @@ MyApplet.prototype = {
             this._busyNotifyId = 0;
          }
          this.targetApp = app;
-         if (this.targetApp) {
+         /*if (this.targetApp) {
             this._appMenuNotifyId = this.targetApp.connect('notify::menu', Lang.bind(this, this._onAppMenuNotify));
             this._actionGroupNotifyId = this.targetApp.connect('notify::action-group', Lang.bind(this, this._onAppMenuNotify));
             this._busyNotifyId = this.targetApp.connect('notify::busy', Lang.bind(this, this._onAppMenuNotify));
-         }
+         }*/
       }
-      this._onAppMenuNotify();
+      //this._onAppMenuNotify();
    },
 
    _tryToShow: function(newLabel, newIcon, newMenu) {
@@ -1103,7 +1103,7 @@ MyApplet.prototype = {
       Applet.Applet.prototype.on_applet_added_to_panel.call(this);
       this.keybindingManager.inihibit = false;
       this._onReplaceAppMenuChanged();
-      this._onShowAppMenuChanged();
+      //this._onShowAppMenuChanged();
       this._onAppmenuChanged(this.indicatorDbus, this.currentWindow);
    },
 

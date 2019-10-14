@@ -1268,7 +1268,7 @@ IndicatorAppMenuWatcher.prototype = {
          }
          this._onWindowChanged();
          if(this._focusWindowId == 0) {
-            this._focusWindowId = global.screen.get_display().connect('notify::focus-window',
+            this._focusWindowId = global.display.connect('notify::focus-window',
                                   Lang.bind(this, this._onWindowChanged));
          }
       }
@@ -1355,7 +1355,7 @@ IndicatorAppMenuWatcher.prototype = {
          }
          this.providers = null;
          if(this._focusWindowId > 0) {
-            global.screen.get_display().disconnect(this._focusWindowId);
+            global.display.disconnect(this._focusWindowId);
             this._focusWindowId = 0;
          }
          this._registeredWindows = null;

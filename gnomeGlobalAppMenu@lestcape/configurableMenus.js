@@ -32,6 +32,7 @@ const Tweener = imports.ui.tweener;
 const Main = imports.ui.main;
 const PopupMenu = imports.ui.popupMenu;
 const Panel = imports.ui.panel;
+const GObject = imports.gi.GObject;
 
 const ExtensionUtils = imports.misc.extensionUtils.getCurrentExtension();
 const Applet = ExtensionUtils.imports.applet;
@@ -59,112 +60,117 @@ const FactoryEventTypes = {
    'clicked'   : "clicked"
 };
 
-const ScrollBox = new Lang.Class({
+/*const ScrollBox = new Lang.Class({
     Name: 'ScrollBox',
-    Extends: St.ScrollView,
+    Extends: St.ScrollView,*/
+const ScrollBox = GObject.registerClass(
 
-    _init: function(params) {
-        this.parent(params);
-        this._timeOutScroll = null;
-        this.auto_scrolling = false;
-    },
+    class ScrollBox extends St.ScrollView {
 
-    _doScrolling: function() {
-        if(this._timeOutScroll) {
-            GLib.source_remove(this._timeOutScroll);
-            this._timeOutScroll = null;
-            if(this._actorScrolling && this.auto_scrolling &&
-               this._auto_scrolling_id || (this._auto_scrolling_id !== undefined)) {
-                let dMin = 20;
-                let dMax = 100;
-                let speed = 10;
-                let hScroll = this._actorScrolling.get_hscroll_bar();
-                let vScroll = this._actorScrolling.get_vscroll_bar();
-                let hAdjustment = hScroll.get_adjustment();
-                let vAdjustment = vScroll.get_adjustment();
-                let [mx, my, mask] = global.get_pointer();
-                let [ax, ay] = this._actorScrolling.get_transformed_position();
-                let [aw, ah] = [this._actorScrolling.get_width(), this._actorScrolling.get_height()];
-                if((vAdjustment.upper > vAdjustment.page_size) && (mx < ax + aw) && (mx > ax)) {
-                    if((my < ay + dMin) && (my > ay - dMax)) {
-                        if(ay > my)
-                            speed = speed*(ay - my);
-                        let val = vAdjustment.get_value();
-                        vAdjustment.set_value(val - speed);
-                        this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
-                    } else if((my > ay + ah - dMin)&&(my < ay + ah + dMax)) {
-                        if(ay + ah < my)
-                            speed = speed*(my - ay - ah);
-                        let val = vAdjustment.get_value();
-                        vAdjustment.set_value(val + speed);
-                        this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
-                    }
-                } else if ((hAdjustment.upper > hAdjustment.page_size) && (my < ay + ah) && (my > ay)) {
-                    if((mx < ax + dMin) && (mx > ax - dMax)) {
-                        if(ax > mx)
-                            speed = speed*(ax - mx);
-                        let val = hAdjustment.get_value();
-                        hAdjustment.set_value(val - speed);
-                        this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
-                    } else if((mx > ax + aw - dMin)&&(mx < ax + aw + dMax)) {
-                        if(ax + aw < mx)
-                            speed = speed*(mx - ax - aw);
-                        let val = hAdjustment.get_value();
-                        hAdjustment.set_value(val + speed);
-                        this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
-                    }
-                }
-            }
-        }
-    },
 
-    _onMotionEvent: function(actor, event) {
-        let hScroll = this.get_hscroll_bar();
-        let vScroll = this.get_vscroll_bar();
-        let hAdjustment = hScroll.get_adjustment();
-        let vAdjustment = vScroll.get_adjustment();
-        this._timeOutScroll = null;
-        if(vAdjustment.upper > vAdjustment.page_size) {
-            this._actorScrolling = actor;
-            let dMin = 20;
-            let dMax = 100;
-            let [mx, my] = event.get_coords();
-            let [ax, ay] = this._actorScrolling.get_transformed_position();
-            let [aw, ah] = [this._actorScrolling.get_width(), this._actorScrolling.get_height()];
-            if((mx < ax + aw)&&(mx > ax)&&((my < ay + dMin)&&(my > ay - dMax))||
-               ((my > ay + ah - dMin)&&(my < ay + ah + dMax))) {
-                this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
-            }
-        } else if(hAdjustment.upper > hAdjustment.page_size) {
-            this._actorScrolling = actor;
-            let dMin = 20;
-            let dMax = 100;
-            let [mx, my] = event.get_coords();
-            let [ax, ay] = this._actorScrolling.get_transformed_position();
-            let [aw, ah] = [this._actorScrolling.get_width(), this._actorScrolling.get_height()];
-            if((my < ay + ah)&&(my > ay)&&((mx < ax + dMin)&&(mx > ax - dMax))||
-               ((mx > ax + aw - dMin)&&(mx < ax + aw + dMax))) {
-                this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
-            }
-        }
-    },
+      _init(params) {
+          super._init(params);
+          this._timeOutScroll = null;
+          this.auto_scrolling = false;
+      }
 
-    set_auto_scrolling: function(auto_scrolling) {
-        try {
-            if (this.auto_scrolling != auto_scrolling) {
-                this.auto_scrolling = auto_scrolling;
-                if (this.auto_scrolling && (!this._auto_scrolling_id || (this._auto_scrolling_id === undefined))) {
-                    this._auto_scrolling_id = this.connect('motion-event', Lang.bind(this, this._onMotionEvent));
-                } else if(!this.auto_scrolling && (this._auto_scrolling_id || (this._auto_scrolling_id !== undefined))) {
-                    this.disconnect(this._auto_scrolling_id);
-                    this._auto_scrolling_id = null;
-                }
-            }
-        } catch(e) {
-            log("Invalid auto scrolling" + e);
-        }
-    },
-});
+      _doScrolling() {
+          if(this._timeOutScroll) {
+              GLib.source_remove(this._timeOutScroll);
+              this._timeOutScroll = null;
+              if(this._actorScrolling && this.auto_scrolling &&
+                 this._auto_scrolling_id || (this._auto_scrolling_id !== undefined)) {
+                  let dMin = 20;
+                  let dMax = 100;
+                  let speed = 10;
+                  let hScroll = this._actorScrolling.get_hscroll_bar();
+                  let vScroll = this._actorScrolling.get_vscroll_bar();
+                  let hAdjustment = hScroll.get_adjustment();
+                  let vAdjustment = vScroll.get_adjustment();
+                  let [mx, my, mask] = global.get_pointer();
+                  let [ax, ay] = this._actorScrolling.get_transformed_position();
+                  let [aw, ah] = [this._actorScrolling.get_width(), this._actorScrolling.get_height()];
+                  if((vAdjustment.upper > vAdjustment.page_size) && (mx < ax + aw) && (mx > ax)) {
+                      if((my < ay + dMin) && (my > ay - dMax)) {
+                          if(ay > my)
+                              speed = speed*(ay - my);
+                          let val = vAdjustment.get_value();
+                          vAdjustment.set_value(val - speed);
+                          this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
+                      } else if((my > ay + ah - dMin)&&(my < ay + ah + dMax)) {
+                          if(ay + ah < my)
+                              speed = speed*(my - ay - ah);
+                          let val = vAdjustment.get_value();
+                          vAdjustment.set_value(val + speed);
+                          this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
+                      }
+                  } else if ((hAdjustment.upper > hAdjustment.page_size) && (my < ay + ah) && (my > ay)) {
+                      if((mx < ax + dMin) && (mx > ax - dMax)) {
+                          if(ax > mx)
+                              speed = speed*(ax - mx);
+                          let val = hAdjustment.get_value();
+                          hAdjustment.set_value(val - speed);
+                          this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
+                      } else if((mx > ax + aw - dMin)&&(mx < ax + aw + dMax)) {
+                          if(ax + aw < mx)
+                              speed = speed*(mx - ax - aw);
+                          let val = hAdjustment.get_value();
+                          hAdjustment.set_value(val + speed);
+                          this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
+                      }
+                  }
+              }
+          }
+      }
+
+      _onMotionEvent(actor, event) {
+          let hScroll = this.get_hscroll_bar();
+          let vScroll = this.get_vscroll_bar();
+          let hAdjustment = hScroll.get_adjustment();
+          let vAdjustment = vScroll.get_adjustment();
+          this._timeOutScroll = null;
+          if(vAdjustment.upper > vAdjustment.page_size) {
+              this._actorScrolling = actor;
+              let dMin = 20;
+              let dMax = 100;
+              let [mx, my] = event.get_coords();
+              let [ax, ay] = this._actorScrolling.get_transformed_position();
+              let [aw, ah] = [this._actorScrolling.get_width(), this._actorScrolling.get_height()];
+              if((mx < ax + aw)&&(mx > ax)&&((my < ay + dMin)&&(my > ay - dMax))||
+                 ((my > ay + ah - dMin)&&(my < ay + ah + dMax))) {
+                  this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
+              }
+          } else if(hAdjustment.upper > hAdjustment.page_size) {
+              this._actorScrolling = actor;
+              let dMin = 20;
+              let dMax = 100;
+              let [mx, my] = event.get_coords();
+              let [ax, ay] = this._actorScrolling.get_transformed_position();
+              let [aw, ah] = [this._actorScrolling.get_width(), this._actorScrolling.get_height()];
+              if((my < ay + ah)&&(my > ay)&&((mx < ax + dMin)&&(mx > ax - dMax))||
+                 ((mx > ax + aw - dMin)&&(mx < ax + aw + dMax))) {
+                  this._timeOutScroll = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, Lang.bind(this, this._doScrolling));
+              }
+          }
+      }
+
+      set_auto_scrolling(auto_scrolling) {
+          try {
+              if (this.auto_scrolling != auto_scrolling) {
+                  this.auto_scrolling = auto_scrolling;
+                  if (this.auto_scrolling && (!this._auto_scrolling_id || (this._auto_scrolling_id === undefined))) {
+                      this._auto_scrolling_id = this.connect('motion-event', Lang.bind(this, this._onMotionEvent));
+                  } else if(!this.auto_scrolling && (this._auto_scrolling_id || (this._auto_scrolling_id !== undefined))) {
+                      this.disconnect(this._auto_scrolling_id);
+                      this._auto_scrolling_id = null;
+                  }
+              }
+          } catch(e) {
+              log("Invalid auto scrolling" + e);
+          }
+      }
+    }
+);
 
 function ScrollItemsBox() {
    this._init.apply(this, arguments);
@@ -497,11 +503,14 @@ BoxPointer.prototype = {
         this._sourceActorId = 0;
         this.actor = new St.Bin({ x_fill: true,
                                   y_fill: true });
-        this._container = new Shell.GenericContainer();
+        /*this._container = new Shell.GenericContainer();
         this.actor.set_child(this._container);
         this._container.connect('get-preferred-width', Lang.bind(this, this._getPreferredWidth));
         this._container.connect('get-preferred-height', Lang.bind(this, this._getPreferredHeight));
-        this._container.connect('allocate', Lang.bind(this, this._allocate));
+        this._container.connect('allocate', Lang.bind(this, this._allocate));*/
+        this._container = new St.BoxLayout({ vertical: true });
+        this.actor.set_child(this._container);
+
         this.bin = new St.Bin(binProperties);
         this._container.add_actor(this.bin);
         this._border = new St.DrawingArea();
@@ -3725,7 +3734,7 @@ ConfigurableMenuManager.prototype = {
             log('pushModal: invocation of begin_modal failed');
             return false;
          }
-         Meta.disable_unredirect_for_screen(global.screen);
+         Meta.disable_unredirect_for_display(global.display);
       }
 
       Main.modalCount += 1;
@@ -4380,10 +4389,11 @@ ConfigurableMenu.prototype = {
          this._boxPointer.actor.connect('key-press-event', Lang.bind(this, this._onKeyPressEvent));
          this._boxPointer.actor.connect('notify::mapped', Lang.bind(this, this._onMapped));
 
-         this._boxWrapper = new Shell.GenericContainer();
-         this._boxWrapper.connect('get-preferred-width', Lang.bind(this, this._boxGetPreferredWidth));
-         this._boxWrapper.connect('get-preferred-height', Lang.bind(this, this._boxGetPreferredHeight));
-         this._boxWrapper.connect('allocate', Lang.bind(this, this._boxAllocate));
+         //this._boxWrapper = new Shell.GenericContainer();
+         //this._boxWrapper.connect('get-preferred-width', Lang.bind(this, this._boxGetPreferredWidth));
+         //this._boxWrapper.connect('get-preferred-height', Lang.bind(this, this._boxGetPreferredHeight));
+         //this._boxWrapper.connect('allocate', Lang.bind(this, this._boxAllocate));
+         this._boxWrapper = new St.BoxLayout({ vertical: true });
          this._boxPointer.bin.set_child(this._boxWrapper);
          this.box.set_style_class_name('');
          this._scroll.add_actor(this.box);
@@ -4414,6 +4424,7 @@ ConfigurableMenu.prototype = {
          this.requestedWidth = -1;
          this.requestedHeight = -1;
       } catch(e) {
+         global.log('ERROR: ', e.message);
          Main.notify("ErrorMenuCreation", e.message);
       }
    },
@@ -4438,7 +4449,7 @@ ConfigurableMenu.prototype = {
          let ah = actor.get_height();
          if(this._correctPlaceResize(mx, my, ax, ay, aw, ah) && !this._isInResizeMode) {
             this._findMouseDeltha();
-            global.screen.set_cursor(Shell.Cursor.DND_MOVE);
+            global.display.set_cursor(Shell.Cursor.DND_MOVE);
             Clutter.grab_pointer(actor);
             this._isInResizeMode = true;
             this.emit('resize-mode-changed', this._isInResizeMode);
@@ -4468,10 +4479,10 @@ ConfigurableMenu.prototype = {
             let at = ay + actor.get_height();
             if(this._correctPlaceResize(mx, my, ax, ay, ar, at)) {
                this._cursorChanged = true;
-               global.screen.set_cursor(Shell.Cursor.DND_MOVE);
+               global.display.set_cursor(Shell.Cursor.DND_MOVE);
             } else if(this._cursorChanged) {
                this._cursorChanged = false;
-               global.screen.set_cursor(Meta.Cursor.DEFAULT);
+               global.display.set_cursor(Meta.Cursor.DEFAULT);
             }
          }
       }
@@ -4540,13 +4551,13 @@ ConfigurableMenu.prototype = {
 
    _disableOverResizeIcon: function() {
       if((this._controlingSize) && (!this._isInResizeMode))
-         global.screen.set_cursor(Meta.Cursor.DEFAULT);
+         global.display.set_cursor(Meta.Cursor.DEFAULT);
    },
 
    _disableResize: function() {
       if(this._isInResizeMode) {
          this._isInResizeMode = false;
-         global.screen.set_cursor(Meta.Cursor.DEFAULT);
+         global.display.set_cursor(Meta.Cursor.DEFAULT);
          Clutter.ungrab_pointer(this.actor);
          this.emit('resize-mode-changed', this._isInResizeMode);
       }
@@ -6984,7 +6995,8 @@ ConfigurableGridSection.prototype = {
       this._relayoutBlocked = true;
       this._viewPort = null;
 
-      this.box = new Shell.GenericContainer();
+      //this.box = new Shell.GenericContainer();
+      this.box = new St.BoxLayout({ vertical: true });
       if(!this.box.insert_child_below) {
          this.box.insert_child_below = Lang.bind(this, function(actor, beforeActor) {
             let childs = this.box.get_children();

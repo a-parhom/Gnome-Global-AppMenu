@@ -15,16 +15,16 @@ const ExtensionType = {
     PER_USER: 2
 };
 
-const ModulesManager = new Lang.Class({
-    Name: 'ModulesManager',
-
-    _init: function() {
+/*const ModulesManager = new Lang.Class({
+    Name: 'ModulesManager',*/
+class ModulesManager { 
+    _init() {
         this.modules = {};
         this.imports = {};
         this.instances = {};
-    },
+    }
 
-    scan: function(path, prefix, requiered) {
+    scan(path, prefix, requiered) {
         this.modules = {};
         this.imports = {};
         this.instances = {};
@@ -62,24 +62,24 @@ const ModulesManager = new Lang.Class({
                 print("Error: Can not import the module %s %s\n".format(name, e));
             }
         }
-    },
+    }
 
-    _satisficeRequieriments: function(instance, requiered) {
+    _satisficeRequieriments(instance, requiered) {
         for (let pos in requiered) {
             if (!(requiered[pos] in instance))
                 return false;
         }
         return true;
-    },
+    }
 
-    haveInstance: function(name) {
+    haveInstance(name) {
         return (name in this.instances);
-    },
+    }
 
-    getInstance: function(name) {
+    getInstance(name) {
         if(this.haveInstance(name))
             return this.instances[name];
         return null;
-    },
-});
+    }
+};
 Signals.addSignalMethods(ModulesManager.prototype);

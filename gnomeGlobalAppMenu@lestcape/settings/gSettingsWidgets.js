@@ -87,46 +87,51 @@ function bind_with_mapping(key, widget, prop, flags, key_to_prop, prop_to_key) {
 Gio.Settings.prototype.bind_with_mapping = bind_with_mapping;
 Gio.Settings.__setitem__ = __setitem__;
 
-const BinFileMonitor = new GObject.Class({
-    Name: 'ClassicGnome.BinFileMonitor',
-    GTypeName: 'ClassicGnomeBinFileMonitor',
-    Signals: {
-        'changed': {
-            flags: GObject.SignalFlags.RUN_LAST
-        },
-    },
+/*const BinFileMonitor = new GObject.Class({
+    Name: 'ClassicGnome.BinFileMonitor',*/
+const BinFileMonitor = GObject.registerClass({
 
-    _init: function() {
-        this.changed_id = 0;
-        let env = GLib.getenv("PATH");
-        if (env == null)
-            env = "/bin:/usr/bin:.";
-        this.paths = env.split(":");
-        this.monitors = [];
-
-        let file, mon;
-        for (let pos in this.paths) {
-            file = Gio.File.new_for_path(this.paths[pos]);
-            mon = file.monitor_directory(Gio.FileMonitorFlags.SEND_MOVED, null);
-            mon.connect("changed", Lang.bind(this, this.queue_emit_changed));
-            this.monitors.push(mon);
+        GTypeName: 'ClassicGnomeBinFileMonitor',
+        Signals: {
+            'changed': {
+                flags: GObject.SignalFlags.RUN_LAST
+            },
         }
     },
 
-    _emit_changed: function() {
-        this.emit("changed");
-        this.changed_id = 0;
-        return false;
-    },
-
-    queue_emit_changed: function(file, other, event_type, data) { //data=null
-        if (this.changed_id > 0) {
-            GLib.source_remove(this.changed_id);
+    class BinFileMonitor { 
+        _init() {
             this.changed_id = 0;
+            let env = GLib.getenv("PATH");
+            if (env == null)
+                env = "/bin:/usr/bin:.";
+            this.paths = env.split(":");
+            this.monitors = [];
+
+            let file, mon;
+            for (let pos in this.paths) {
+                file = Gio.File.new_for_path(this.paths[pos]);
+                mon = file.monitor_directory(Gio.FileMonitorFlags.SEND_MOVED, null);
+                mon.connect("changed", Lang.bind(this, this.queue_emit_changed));
+                this.monitors.push(mon);
+            }
         }
-        this.changed_id = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, Lang.bind(this, this._emit_changed));
-    },
-});
+
+        _emit_changed() {
+            this.emit("changed");
+            this.changed_id = 0;
+            return false;
+        }
+
+        queue_emit_changed(file, other, event_type, data) { //data=null
+            if (this.changed_id > 0) {
+                GLib.source_remove(this.changed_id);
+                this.changed_id = 0;
+            }
+            this.changed_id = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, Lang.bind(this, this._emit_changed));
+        }
+    }
+);
 Signals.addSignalMethods(BinFileMonitor.prototype);
 
 var file_monitor = null;
@@ -137,147 +142,155 @@ function get_file_monitor() {
     return file_monitor;
 }
 
-const DependencyCheckInstallButton = new GObject.Class({
+/*const DependencyCheckInstallButton = new GObject.Class({
     Name: 'ClassicGnome.DependencyCheckInstallButton',
-    GTypeName: 'ClassicGnomeDependencyCheckInstallButton',
-    Extends: Gtk.Box,
-
-    _init: function(checking_text, install_button_text, binfiles, final_widget, satisfied_cb) {//final_widget=null, satisfied_cb=null
-        this.parent({ orientation: Gtk.Orientation.HORIZONTAL });
-
-        this.binfiles = binfiles;
-        this.satisfied_cb = satisfied_cb;
-
-        this.checking_text = checking_text;
-        this.install_button_text = install_button_text;
-
-        this.stack = new Gtk.Stack();
-        this.pack_start(this.stack, false, false, 0);
-
-        this.progress_bar = new Gtk.ProgressBar()
-        this.stack.add_named(this.progress_bar, "progress");
-
-        this.progress_bar.set_show_text(true);
-        this.progress_bar.set_text(this.checking_text);
-
-        this.install_warning = new Gtk.Label({ label: install_button_text });
-        let frame = new Gtk.Frame();
-        frame.add(this.install_warning);
-        frame.set_shadow_type(Gtk.ShadowType.OUT);
-        frame.show_all();
-        this.stack.add_named(frame, "install");
-
-        if (final_widget) {
-            this.stack.add_named(final_widget, "final");
-        } else {
-            this.stack.add_named(Gtk.Alignment(), "final");
-        }
-        this.stack.set_visible_child_name("progress");
-        this.progress_source_id = 0;
-
-        this.file_listener = get_file_monitor();
-        this.file_listener_id = this.file_listener.connect("changed", Lang.bind(this, this.on_file_listener_ping));
-
-        this.connect("destroy", Lang.bind(this, this._on_destroy));
-
-        GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, Lang.bind(this, this.check));
+    Extends: Gtk.Box,*/
+const DependencyCheckInstallButton = GObject.registerClass({
+        GTypeName: 'ClassicGnomeDependencyCheckInstallButton'
     },
 
-    check: function() {
-        this.start_pulse();
-        let success = true;
+    class DependencyCheckInstallButton extends Gtk.Box {
+        _init(checking_text, install_button_text, binfiles, final_widget, satisfied_cb) {//final_widget=null, satisfied_cb=null
+            super.construct({ orientation: Gtk.Orientation.HORIZONTAL });
 
-        for (let pos in this.binfiles) {
-            if (!GLib.find_program_in_path(this.binfiles[pos])) {
-                success = false;
-                break;
+            this.binfiles = binfiles;
+            this.satisfied_cb = satisfied_cb;
+
+            this.checking_text = checking_text;
+            this.install_button_text = install_button_text;
+
+            this.stack = new Gtk.Stack();
+            this.pack_start(this.stack, false, false, 0);
+
+            this.progress_bar = new Gtk.ProgressBar()
+            this.stack.add_named(this.progress_bar, "progress");
+
+            this.progress_bar.set_show_text(true);
+            this.progress_bar.set_text(this.checking_text);
+
+            this.install_warning = new Gtk.Label({ label: install_button_text });
+            let frame = new Gtk.Frame();
+            frame.add(this.install_warning);
+            frame.set_shadow_type(Gtk.ShadowType.OUT);
+            frame.show_all();
+            this.stack.add_named(frame, "install");
+
+            if (final_widget) {
+                this.stack.add_named(final_widget, "final");
+            } else {
+                this.stack.add_named(Gtk.Alignment(), "final");
             }
-        }
-        GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, Lang.bind(this, this.on_check_complete, success));
-
-        return false;
-    },
-
-    pulse_progress: function() {
-        this.progress_bar.pulse();
-        return true;
-    },
-
-    start_pulse: function() {
-        this.cancel_pulse();
-        this.progress_source_id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, Lang.bind(this, this.pulse_progress));
-    },
-
-    cancel_pulse: function() {
-        if (this.progress_source_id > 0) {
-            GLib.source_remove(this.progress_source_id);
+            this.stack.set_visible_child_name("progress");
             this.progress_source_id = 0;
-        }
-    },
 
-    on_check_complete: function(result, data) { //data=null
-        this.cancel_pulse();
-        if (result) {
-            this.stack.set_visible_child_name("final");
-            if (this.satisfied_cb && (this.satisfied_cb !== undefined)) {
-                this.satisfied_cb();
+            this.file_listener = get_file_monitor();
+            this.file_listener_id = this.file_listener.connect("changed", Lang.bind(this, this.on_file_listener_ping));
+
+            this.connect("destroy", Lang.bind(this, this._on_destroy));
+
+            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, Lang.bind(this, this.check));
+        }
+
+        check() {
+            this.start_pulse();
+            let success = true;
+
+            for (let pos in this.binfiles) {
+                if (!GLib.find_program_in_path(this.binfiles[pos])) {
+                    success = false;
+                    break;
+                }
             }
-        } else {
-            this.stack.set_visible_child_name("install");
+            GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, Lang.bind(this, this.on_check_complete, success));
+
+            return false;
         }
-    },
 
-    on_file_listener_ping: function(monitor, data) { //data=null
-        this.stack.set_visible_child_name("progress");
-        this.progress_bar.set_text(this.checking_text);
-        this.check();
-    },
-
-    _on_destroy: function(widget) {
-        if(this.file_listener_id != 0) {
-            this.file_listener.disconnect(this.file_listener_id);
-            this.file_listener_id = 0;
+        pulse_progress() {
+            this.progress_bar.pulse();
+            return true;
         }
-    },
-});
 
-const GSettingsDependencySwitch = new GObject.Class({
+        start_pulse() {
+            this.cancel_pulse();
+            this.progress_source_id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 200, Lang.bind(this, this.pulse_progress));
+        }
+
+        cancel_pulse() {
+            if (this.progress_source_id > 0) {
+                GLib.source_remove(this.progress_source_id);
+                this.progress_source_id = 0;
+            }
+        }
+
+        on_check_complete(result, data) { //data=null
+            this.cancel_pulse();
+            if (result) {
+                this.stack.set_visible_child_name("final");
+                if (this.satisfied_cb && (this.satisfied_cb !== undefined)) {
+                    this.satisfied_cb();
+                }
+            } else {
+                this.stack.set_visible_child_name("install");
+            }
+        }
+
+        on_file_listener_ping(monitor, data) { //data=null
+            this.stack.set_visible_child_name("progress");
+            this.progress_bar.set_text(this.checking_text);
+            this.check();
+        }
+
+        _on_destroy(widget) {
+            if(this.file_listener_id != 0) {
+                this.file_listener.disconnect(this.file_listener_id);
+                this.file_listener_id = 0;
+            }
+        }
+    }
+);
+
+/*const GSettingsDependencySwitch = new GObject.Class({
     Name: 'ClassicGnome.GSettingsDependencySwitch',
-    GTypeName: 'ClassicGnomeGSettingsDependencySwitch',
-    Extends: SettingsWidgets.SettingsWidget,
-
-    _init: function(label, schema, key, dep_key, binfiles, packages) {// schema=null, key=null, dep_key=null, binfiles=null, packages=null
-        this.parent(dep_key);
-
-        this.binfiles = binfiles;
-        this.packages = packages;
-
-        this.content_widget = new Gtk.Alignment();
-        this.label = new Gtk.Label({ label: label });
-        this.pack_start(this.label, false, false, 0);
-        this.pack_end(this.content_widget, false, false, 0);
-
-        this.switcher = new Gtk.Switch();
-        this.switcher.set_halign(Gtk.Align.END);
-        this.switcher.set_valign(Gtk.Align.CENTER);
-
-        let pkg_string = "";
-        for (let pkg in packages) {
-            if (pkg_string != "")
-                pkg_string += ", ";
-            pkg_string += pkg;
-        }
-        this.dep_button = new DependencyCheckInstallButton(_("Checking dependencies"),
-                                                           _("Please install: %s").format(pkg_string),
-                                                           binfiles,
-                                                           this.switcher);
-        this.content_widget.add(this.dep_button);
-        if (schema) {
-            this.settings = this.get_settings(schema);
-            this.settings.bind(key, this.switcher, "active", Gio.SettingsBindFlags.DEFAULT);
-        }
+    Extends: SettingsWidgets.SettingsWidget,*/
+const GSettingsDependencySwitch = GObject.registerClass({    
+        GTypeName: 'ClassicGnomeGSettingsDependencySwitch'
     },
-});
+
+    class GSettingsDependencySwitch extends SettingsWidgets.SettingsWidget {
+        _init(label, schema, key, dep_key, binfiles, packages) {// schema=null, key=null, dep_key=null, binfiles=null, packages=null
+            super.construct(dep_key);
+
+            this.binfiles = binfiles;
+            this.packages = packages;
+
+            this.content_widget = new Gtk.Alignment();
+            this.label = new Gtk.Label({ label: label });
+            this.pack_start(this.label, false, false, 0);
+            this.pack_end(this.content_widget, false, false, 0);
+
+            this.switcher = new Gtk.Switch();
+            this.switcher.set_halign(Gtk.Align.END);
+            this.switcher.set_valign(Gtk.Align.CENTER);
+
+            let pkg_string = "";
+            for (let pkg in packages) {
+                if (pkg_string != "")
+                    pkg_string += ", ";
+                pkg_string += pkg;
+            }
+            this.dep_button = new DependencyCheckInstallButton(_("Checking dependencies"),
+                                                               _("Please install: %s").format(pkg_string),
+                                                               binfiles,
+                                                               this.switcher);
+            this.content_widget.add(this.dep_button);
+            if (schema) {
+                this.settings = this.get_settings(schema);
+                this.settings.bind(key, this.switcher, "active", Gio.SettingsBindFlags.DEFAULT);
+            }
+        }
+    }
+);
 
 // This class is not meant to be used directly - it is only a backend for the
 // settings widgets to enable them to bind attributes to gsettings keys. To use
@@ -360,86 +373,90 @@ const CSGSettingsBackend = new GObject.Class({
 });*/
 
 function g_settings_factory(subclass) {
-    const CSGSettingsBackend = new GObject.Class({
+    /*const CSGSettingsBackend = new GObject.Class({
         Name: 'GSettings.' + subclass,
-        GTypeName: 'GSettings' + subclass,
-        Extends: eval('SettingsWidgets.' + subclass),
+        Extends: eval('SettingsWidgets.' + subclass),*/
+    const CSGSettingsBackend = GObject.registerClass({   
+            GTypeName: 'GSettings' + subclass
+        },
 
-        _init: function(label, schema, key, args, kwargs) {
-            this.key = key;
-            if (!(schema in SettingsWidgets.settings_objects)) {
-                SettingsWidgets.settings_objects[schema] = global.getSettings(schema);
-            }
-            this.settings = SettingsWidgets.settings_objects[schema];
+        class CSGSettingsBackend extends eval('SettingsWidgets.' + subclass) {
+            _init(label, schema, key, args, kwargs) {
+                this.key = key;
+                if (!(schema in SettingsWidgets.settings_objects)) {
+                    SettingsWidgets.settings_objects[schema] = global.getSettings(schema);
+                }
+                this.settings = SettingsWidgets.settings_objects[schema];
 
-            if(!this.on_setting_changed) {
-                this.on_setting_changed = Lang.bind(this, function(argms) {
-                    throw Error("SettingsWidget class must implement on_setting_changed().");
-                });
-            }
+                if(!this.on_setting_changed) {
+                    this.on_setting_changed = Lang.bind(this, function(argms) {
+                        throw Error("SettingsWidget class must implement on_setting_changed().");
+                    });
+                }
 
-            if(!this.connect_widget_handlers) {
-                this.connect_widget_handlers = Lang.bind(this, function(argms) {
-                    if (this.bind_dir == null) {
-                        throw Error("SettingsWidget classes with no .bind_dir must implement connect_widget_handlers().");
+                if(!this.connect_widget_handlers) {
+                    this.connect_widget_handlers = Lang.bind(this, function(argms) {
+                        if (this.bind_dir == null) {
+                            throw Error("SettingsWidget classes with no .bind_dir must implement connect_widget_handlers().");
+                        }
+                    });
+                }
+                if(kwargs && (kwargs !== undefined)) {
+                    if (kwargs.hasOwnProperty("map_get")) {
+                        this.map_get = kwargs.map_get;
+                        delete kwargs["map_get"];
                     }
-                });
-            }
-            if(kwargs && (kwargs !== undefined)) {
-                if (kwargs.hasOwnProperty("map_get")) {
-                    this.map_get = kwargs.map_get;
-                    delete kwargs["map_get"];
+                    if (kwargs.hasOwnProperty("map_set")) {
+                        this.map_set = kwargs.map_set;
+                        delete kwargs["map_set"];
+                    }
+                } else {
+                    kwargs = {};
                 }
-                if (kwargs.hasOwnProperty("map_set")) {
-                    this.map_set = kwargs.map_set;
-                    delete kwargs["map_set"];
+                kwargs["label"] = label;
+                this.parent(kwargs, args);
+                this.bind_settings();
+            }
+
+            bind_settings() {
+                if (this.hasOwnProperty("set_rounding")) {
+                    let vtype = this.settings.get_value(this.key).get_type_string();
+                    if (vtype in ["i", "u"])
+                        this.set_rounding(0);
                 }
-            } else {
-                kwargs = {};
+                let bind_object;
+                if (this.hasOwnProperty("bind_object")) {
+                    bind_object = this.bind_object;
+                } else {
+                    bind_object = this.content_widget;
+                }
+                if (this.hasOwnProperty("map_get") || this.hasOwnProperty("map_set")) {
+                    this.settings.bind_with_mapping(this.key, bind_object, this.bind_prop, this.bind_dir, this.map_get, this.map_set);
+                } else if (this.bind_dir != null) {
+                    this.settings.bind(this.key, bind_object, this.bind_prop, this.bind_dir);
+                } else {
+                    this.settings.connect("changed::"+this.key, Lang.bind(this, this.on_setting_changed));
+                    this.on_setting_changed();
+                    this.connect_widget_handlers();
+                }
             }
-            kwargs["label"] = label;
-            this.parent(kwargs, args);
-            this.bind_settings();
-        },
 
-        bind_settings: function() {
-            if (this.hasOwnProperty("set_rounding")) {
-                let vtype = this.settings.get_value(this.key).get_type_string();
-                if (vtype in ["i", "u"])
-                    this.set_rounding(0);
+            set_value(value) {
+                this.settings[this.key] = value;
             }
-            let bind_object;
-            if (this.hasOwnProperty("bind_object")) {
-                bind_object = this.bind_object;
-            } else {
-                bind_object = this.content_widget;
+
+            get_value() {
+                return this.settings[this.key];
             }
-            if (this.hasOwnProperty("map_get") || this.hasOwnProperty("map_set")) {
-                this.settings.bind_with_mapping(this.key, bind_object, this.bind_prop, this.bind_dir, this.map_get, this.map_set);
-            } else if (this.bind_dir != null) {
-                this.settings.bind(this.key, bind_object, this.bind_prop, this.bind_dir);
-            } else {
-                this.settings.connect("changed::"+this.key, Lang.bind(this, this.on_setting_changed));
-                this.on_setting_changed();
-                this.connect_widget_handlers();
+
+            get_range() {
+                let range = this.settings.get_range(this.key);
+                if (range[0] == "range")
+                    return [range[1][0], range[1][1]];
+                return null;
             }
-        },
-
-        set_value: function(value) {
-            this.settings[this.key] = value;
-        },
-
-        get_value: function() {
-            return this.settings[this.key];
-        },
-
-        get_range: function() {
-            let range = this.settings.get_range(this.key);
-            if (range[0] == "range")
-                return [range[1][0], range[1][1]];
-            return null;
-        },
-    });
+        }
+    );
     return CSGSettingsBackend;
 }
 
