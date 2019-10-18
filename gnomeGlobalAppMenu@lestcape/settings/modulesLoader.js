@@ -15,16 +15,18 @@ const ExtensionType = {
     PER_USER: 2
 };
 
-/*const ModulesManager = new Lang.Class({
-    Name: 'ModulesManager',*/
-class ModulesManager { 
-    _init() {
+function ModulesManager(xlet, uuid) {
+    this._init(xlet, uuid);
+}
+
+ModulesManager.prototype = {
+    _init: function() {
         this.modules = {};
         this.imports = {};
         this.instances = {};
-    }
+    },
 
-    scan(path, prefix, requiered) {
+    scan: function(path, prefix, requiered) {
         this.modules = {};
         this.imports = {};
         this.instances = {};
@@ -49,34 +51,38 @@ class ModulesManager {
         }
         for (let name in this.modules) {
             let moduleName = this.modules[name][0];
+                        
             try {
-                this.imports[name] = cimports.settings.modules[moduleName];
+        
+                this.imports[name] = cimports.settings.modules[moduleName];                
                 if(this.imports[name].Module) {
                     let instance = new this.imports[name].Module();
                     if(this._satisficeRequieriments(instance, requiered)) {
                         this.instances[name] = instance;
                         print("Loaded module: " + name + "\n");
+                        global.notify("Error:", "Loaded module: " + name, "dialog-error-symbolic");
                     }
                 }
             } catch(e) {
                 print("Error: Can not import the module %s %s\n".format(name, e));
+                global.notify("Error:", "Can not import the module %s %s\n".format(name, e), "dialog-error-symbolic");
             }
         }
-    }
+    },
 
-    _satisficeRequieriments(instance, requiered) {
+    _satisficeRequieriments: function(instance, requiered) {
         for (let pos in requiered) {
             if (!(requiered[pos] in instance))
                 return false;
         }
         return true;
-    }
+    },
 
-    haveInstance(name) {
+    haveInstance: function(name) {
         return (name in this.instances);
-    }
+    },
 
-    getInstance(name) {
+    getInstance: function(name) {
         if(this.haveInstance(name))
             return this.instances[name];
         return null;

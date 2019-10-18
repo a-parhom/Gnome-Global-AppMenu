@@ -23,20 +23,20 @@ const MyExtension = imports.misc.extensionUtils.getCurrentExtension();
 const ConfigurableMenus = MyExtension.imports.configurableMenus;
 
 
-const COLOR_ICON_HEIGHT_FACTOR = .875;  // Panel height factor for normal color icons
-const PANEL_FONT_DEFAULT_HEIGHT = 11.5; // px
-const PANEL_SYMBOLIC_ICON_DEFAULT_HEIGHT = 1.14 * PANEL_FONT_DEFAULT_HEIGHT; // ems conversion
-const DEFAULT_PANEL_HEIGHT = 25;
-const DEFAULT_ICON_HEIGHT = 22;
-const FALLBACK_ICON_HEIGHT = 22;
+var COLOR_ICON_HEIGHT_FACTOR = .875;  // Panel height factor for normal color icons
+var PANEL_FONT_DEFAULT_HEIGHT = 11.5; // px
+var PANEL_SYMBOLIC_ICON_DEFAULT_HEIGHT = 1.14 * PANEL_FONT_DEFAULT_HEIGHT; // ems conversion
+var DEFAULT_PANEL_HEIGHT = 25;
+var DEFAULT_ICON_HEIGHT = 22;
+var FALLBACK_ICON_HEIGHT = 22;
 
-const AllowedLayout = {  // the panel layout that an applet is suitable for
+var AllowedLayout = {  // the panel layout that an applet is suitable for
     VERTICAL: 'vertical',
     HORIZONTAL: 'horizontal',
     BOTH: 'both'
 };
 
-const MOD_MASK =[
+var MOD_MASK =[
     Clutter.KEY_Alt_L, Clutter.KEY_Alt_R, Clutter.KEY_Control_L,
     Clutter.KEY_Control_R, Clutter.KEY_Shift_L, Clutter.KEY_Shift_R
 ];

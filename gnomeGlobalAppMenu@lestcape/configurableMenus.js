@@ -5881,12 +5881,12 @@ ArrayBoxLayout.prototype = {
       return false;
    },
 
-   navegate: function(symbol, actor) {
+   navigate: function(symbol, actor) {
       if(actor) {
          let menuItems = this.getMenuItems();
          for(let pos in menuItems) {
             if(menuItems[pos].contains(actor)) {
-               return menuItems[pos].navegate(symbol, actor);
+               return menuItems[pos].navigate(symbol, actor);
             }
          }
       }
@@ -7547,7 +7547,7 @@ ConfigurableGridSection.prototype = {
       return false;
    },
 
-   navegate: function(symbol, actor) {
+   navigate: function(symbol, actor) {
       let children = this._getVisibleChildren();
       let num = children.length;
       let nextItem = null;
@@ -7656,7 +7656,7 @@ Signals.addSignalMethods(ConfigurableGridSection.prototype);
  * to be displayed over the Shell panel.
  */
 
-const OversizeMode = {
+var OversizeMode = {
    "NONE": 1,
    "FAKE_MENU": 2,
    "AUTO_SCROLLING": 3,
@@ -8579,7 +8579,7 @@ ConfigurableAppletMenu.prototype = {
       return this.rootGnomeCat;
    },
 
-   navegateAppletMenu: function(symbol, actor) {
+   navigateAppletMenu: function(symbol, actor) {
       let actorChange = this.activeActor;
       if(!actorChange)
         actorChange = this.rootGnomeCat;	

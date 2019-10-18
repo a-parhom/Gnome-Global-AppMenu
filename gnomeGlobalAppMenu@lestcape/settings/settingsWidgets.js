@@ -4,35 +4,35 @@
  * ========================================================================================================
  */
 
-const Gettext = imports.gettext;
-const Lang = imports.lang;
-const Gio = imports.gi.Gio;
-const GLib = imports.gi.GLib;
-const GObject = imports.gi.GObject;
-const Gtk = imports.gi.Gtk;
-const Gdk = imports.gi.Gdk;
-const GdkPixbuf = imports.gi.GdkPixbuf;
-const GDesktopEnums = imports.gi.GDesktopEnums;
-const GnomeDesktop = imports.gi.GnomeDesktop;
-const Params = imports.misc.params;
+var Gettext = imports.gettext;
+var Lang = imports.lang;
+var Gio = imports.gi.Gio;
+var GLib = imports.gi.GLib;
+var GObject = imports.gi.GObject;
+var Gtk = imports.gi.Gtk;
+var Gdk = imports.gi.Gdk;
+var GdkPixbuf = imports.gi.GdkPixbuf;
+var GDesktopEnums = imports.gi.GDesktopEnums;
+var GnomeDesktop = imports.gi.GnomeDesktop;
+var Params = imports.misc.params;
 
-const KeybindingWidgets = cimports.settings.keybindingWidgets;
-const ChooserButtonWidgets = cimports.settings.chooserButtonWidgets;
-//const Gettext = Gettext.domain(ExtensionUtils.metadata['gettext-domain']);
-const _ = Gettext.gettext;
+var KeybindingWidgets = cimports.settings.keybindingWidgets;
+var ChooserButtonWidgets = cimports.settings.chooserButtonWidgets;
+//var Gettext = Gettext.domain(ExtensionUtils.metadata['gettext-domain']);
+var _ = Gettext.gettext;
 
-const settings_objects = {};
+var settings_objects = {};
 
-const CAN_BACKEND = [
+var CAN_BACKEND = [
     "Switch", "SpinButton", "Entry", "TextView", "FontButton", "Range", "ComboBox",
     "ColorChooser", "FileChooser", "SoundFileChooser", "IconChooser", "TweenChooser",
     "EffectChooser", "DateChooser", "Keybinding"
 ];
 
-/*const EditableEntry = new GObject.Class({
+/*var EditableEntry = new GObject.Class({
     Name: 'ClassicGnome.EditableEntry',
     Extends: Gtk.Stack,*/
-const EditableEntry = GObject.registerClass({    
+var EditableEntry = GObject.registerClass({    
         GTypeName: 'ClassicGnomeEditableEntry',
         Signals: {
             'changed': {
@@ -43,7 +43,7 @@ const EditableEntry = GObject.registerClass({
     },
     class EditableEntry extends Gtk.Stack {
         _init() {
-            super.construct();
+            super.varruct();
 
             this.set_transition_type(Gtk.StackTransitionType.CROSSFADE);
             this.set_transition_duration(150);
@@ -118,12 +118,12 @@ const EditableEntry = GObject.registerClass({
     }
 );
 
-/*const SidePage = new GObject.Class({
+/*var SidePage = new GObject.Class({
     Name: 'ClassicGnome.SidePage',*/
-const SidePage = GObject.registerClass({    
+var SidePage = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSidePage'
     },
-    class SidePage {
+    class SidePage extends GObject.Object {
         _init(name, icon, keywords, size, content_box, is_c_mod, is_standalone, exec_name, args, window, module) {
             //content_box = null  //size = null //is_c_mod = false  //is_standalone = false //exec_name = null //module=null
 
@@ -258,13 +258,13 @@ const SidePage = GObject.registerClass({
 
         request_navegation(id) {
             if(this.module && this.module.handler)
-                 this.module.handler.navegate(this, id);
+                 this.module.handler.navigate(this, id);
         }
     }
 );
 
 /*
-const CCModule = new GObject.Class({
+var CCModule = new GObject.Class({
     Name: 'ClassicGnome.CCModule',
     GTypeName: 'ClassicGnomeCCModule',
 
@@ -287,7 +287,7 @@ const CCModule = new GObject.Class({
     },
 });
 
-const SAModule = new GObject.Class({
+var SAModule = new GObject.Class({
     Name: 'ClassicGnome.SAModule',
     GTypeName: 'ClassicGnomeSAModule',
 
@@ -346,15 +346,15 @@ function rec_mkdir(path) {
     os.mkdir(path);
 }
 */
-/*const Section = new GObject.Class({
+/*var Section = new GObject.Class({
     Name: 'ClassicGnome.Section',
     Extends: Gtk.Box,*/
-const Section = GObject.registerClass({    
+var Section = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSection'
     },
     class Section extends Gtk.Box {
         _init(name) {
-            super.construct();
+            super.varruct();
             this.name = name;
             this.set_orientation(Gtk.Orientation.VERTICAL);
             this.set_border_width(6);
@@ -401,15 +401,15 @@ const Section = GObject.registerClass({
     }
 );
 
-/*const SectionBg = new GObject.Class({
+/*var SectionBg = new GObject.Class({
     Name: 'ClassicGnome.SectionBg',
     Extends: Gtk.Viewport,*/
-const SectionBg = GObject.registerClass({    
+var SectionBg = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSectionBg'
     },
     class SectionBg extends Gtk.Viewport {
         _init() {
-            super.construct();
+            super.varruct();
             this.set_shadow_type(Gtk.ShadowType.ETCHED_IN);
             style = this.get_style_context();
             style.add_class("section-bg");
@@ -418,15 +418,15 @@ const SectionBg = GObject.registerClass({
     }
 );
 
-/*const SettingsStack = new GObject.Class({
+/*var SettingsStack = new GObject.Class({
     Name: 'ClassicGnome.SettingsStack',
     Extends: Gtk.Stack,*/
-const SettingsStack = GObject.registerClass({    
+var SettingsStack = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSettingsStack'
     },
     class SettingsStack extends Gtk.Stack {
         _init() {
-            super.construct();
+            super.varruct();
             this.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT);
             this.set_transition_duration(150);
             this.expand = true;
@@ -434,15 +434,15 @@ const SettingsStack = GObject.registerClass({
     }
 );
 
-/*const SettingsRevealer = new GObject.Class({
+/*var SettingsRevealer = new GObject.Class({
     Name: 'ClassicGnome.SettingsRevealer',
     Extends: Gtk.Revealer,*/
-const SettingsRevealer = GObject.registerClass({    
+var SettingsRevealer = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSettingsRevealer'
     },
     class SettingsRevealer extends Gtk.Revealer {
         _init(schema, key, values) {//schema=null, key=null, values=null
-            super.construct();
+            super.varruct();
 
             this.box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 15 });
             Gtk.Revealer.prototype.add.call(this, this.box);
@@ -474,15 +474,15 @@ const SettingsRevealer = GObject.registerClass({
     }
 );
 
-/*const SettingsPage = new GObject.Class({
+/*var SettingsPage = new GObject.Class({
     Name: 'ClassicGnome.SettingsPage',
     Extends: Gtk.Box,*/
-const SettingsPage = GObject.registerClass({    
+var SettingsPage = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSettingsPage'
     },
     class SettingsPage extends Gtk.Box {
         _init() {
-            super.construct();
+            super.varruct();
             this.set_orientation(Gtk.Orientation.VERTICAL);
             this.set_spacing(15);
             this.set_margin_left(80);
@@ -508,15 +508,15 @@ const SettingsPage = GObject.registerClass({
     }
 );
 
-/*const SettingsBox = new GObject.Class({
+/*var SettingsBox = new GObject.Class({
     Name: 'ClassicGnome.SettingsBox',
     Extends: Gtk.Frame,*/
-const SettingsBox = GObject.registerClass({    
+var SettingsBox = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSettingsBox'
     },
     class SettingsBox extends Gtk.Frame {
         _init(title) { 
-            super.construct();
+            super.varruct();
             this.set_shadow_type(Gtk.ShadowType.IN);
             let frame_style = this.get_style_context();
             frame_style.add_class("view");
@@ -604,15 +604,15 @@ const SettingsBox = GObject.registerClass({
     }
 );
 
-/*const SettingsWidget = new GObject.Class({
+/*var SettingsWidget = new GObject.Class({
     Name: 'ClassicGnome.SettingsWidget',
     Extends: Gtk.Box,*/
-const SettingsWidget = GObject.registerClass({    
+var SettingsWidget = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSettingsWidget'
     },
     class SettingsWidget extends Gtk.Box {
         _init(dep_key) { //dep_key=null
-            super.construct();
+            super.varruct();
             this.set_orientation(Gtk.Orientation.HORIZONTAL);
             this.set_spacing(20);
             this.set_border_width(5);
@@ -661,15 +661,15 @@ const SettingsWidget = GObject.registerClass({
     }
 );
 
-/*const SettingsLabel = new GObject.Class({
+/*var SettingsLabel = new GObject.Class({
     Name: 'ClassicGnome.SettingsLabel',
     Extends: Gtk.Label,*/
-const SettingsLabel = GObject.registerClass({    
+var SettingsLabel = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSettingsLabel'
     },
     class SettingsLabel extends Gtk.Label {
         _init(text) { //text=null
-            super.construct();
+            super.varruct();
             if (text) {
                 this.set_label(text);
             }
@@ -685,15 +685,15 @@ const SettingsLabel = GObject.registerClass({
 );
 
 
-/*const IndentedHBox = new GObject.Class({
+/*var IndentedHBox = new GObject.Class({
     Name: 'ClassicGnome.IndentedHBox',
     Extends: Gtk.HBox,*/
-const IndentedHBox = GObject.registerClass({    
+var IndentedHBox = GObject.registerClass({    
         GTypeName: 'ClassicGnomeIndentedHBox'
     },
     class IndentedHBox extends Gtk.HBox {
         _init() {
-            super.construct();
+            super.varruct();
             indent = new Gtk.Label({ label: "\t" });
             this.pack_start(indent, false, false, 0);
         }
@@ -708,10 +708,10 @@ const IndentedHBox = GObject.registerClass({
     }
 );
 
-/*const Switch = new GObject.Class({
+/*var Switch = new GObject.Class({
     Name: 'ClassicGnome.Switch',
     Extends: SettingsWidget,*/
-const Switch = GObject.registerClass({    
+var Switch = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSwitch',
         bind_prop: "active",
         bind_dir: Gio.SettingsBindFlags.DEFAULT
@@ -719,7 +719,7 @@ const Switch = GObject.registerClass({
     class Switch extends SettingsWidget {
         _init(params) {
             params = Params.parse(params, { label: "", dep_key: null, tooltip: "" });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
             this.content_widget = new Gtk.Switch();
             this.label = new SettingsLabel(params.label);
             this.pack_start(this.label, false, false, 0);
@@ -742,10 +742,10 @@ const Switch = GObject.registerClass({
     }
 );
 
-/*const SpinButton = new GObject.Class({
+/*var SpinButton = new GObject.Class({
     Name: 'ClassicGnome.SpinButton',
     Extends: SettingsWidget,*/
-const SpinButton = GObject.registerClass({    
+var SpinButton = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSpinButton',
         bind_prop: "value",
         bind_dir: Gio.SettingsBindFlags.GET
@@ -756,7 +756,7 @@ const SpinButton = GObject.registerClass({
                 label: "", units: "", mini: null, maxi: null, step: 1,
                 page: null, size_group: null, dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.timer = null;
 
@@ -813,10 +813,10 @@ const SpinButton = GObject.registerClass({
     }
 );
 
-/*const Entry = new GObject.Class({
+/*var Entry = new GObject.Class({
     Name: 'ClassicGnome.Entry',
     Extends: SettingsWidget,*/
-const Entry = GObject.registerClass({    
+var Entry = GObject.registerClass({    
         GTypeName: 'ClassicGnomeEntry',
         bind_prop: "text",
         bind_dir: Gio.SettingsBindFlags.DEFAULT
@@ -826,7 +826,7 @@ const Entry = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", expand_width: false, size_group: null, dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
             this.content_widget = new Gtk.Entry();
@@ -851,10 +851,10 @@ const Entry = GObject.registerClass({
     }
 );
 
-/*const TextView = new GObject.Class({
+/*var TextView = new GObject.Class({
     Name: 'ClassicGnome.TextView',
     Extends: SettingsWidget,*/
-const TextView = GObject.registerClass({    
+var TextView = GObject.registerClass({    
         GTypeName: 'ClassicGnomeTextView',
         bind_prop: "text",
         bind_dir: Gio.SettingsBindFlags.DEFAULT
@@ -864,7 +864,7 @@ const TextView = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", height: 200, dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.set_orientation(Gtk.Orientation.VERTICAL);
             this.set_spacing(8);
@@ -893,10 +893,10 @@ const TextView = GObject.registerClass({
     }
 );
 
-/*const FontButton = new GObject.Class({
+/*var FontButton = new GObject.Class({
     Name: 'ClassicGnome.FontButton',
     Extends: SettingsWidget,*/
-const FontButton = GObject.registerClass({    
+var FontButton = GObject.registerClass({    
         GTypeName: 'ClassicGnomeFontButton',
         bind_prop: "font-name",
         bind_dir: Gio.SettingsBindFlags.DEFAULT
@@ -906,7 +906,7 @@ const FontButton = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", size_group: null, dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
 
@@ -924,10 +924,10 @@ const FontButton = GObject.registerClass({
     }
 );
 
-/*const Range = new GObject.Class({
+/*var Range = new GObject.Class({
     Name: 'ClassicGnome.Range',
     Extends: SettingsWidget,*/
-const Range = GObject.registerClass({    
+var Range = GObject.registerClass({    
         GTypeName: 'ClassicGnomeRange',
         bind_prop: "font-name",
         bind_dir: Gio.SettingsBindFlags.DEFAULT
@@ -938,7 +938,7 @@ const Range = GObject.registerClass({
                 label: "", min_label: "", max_label: "", mini: null, maxi: null,
                 step: null, invert: false, log: false, dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.set_orientation(Gtk.Orientation.VERTICAL);
             this.set_spacing(0);
@@ -1043,10 +1043,10 @@ const Range = GObject.registerClass({
     }
 );
 
-/*const ComboBox = new GObject.Class({
+/*var ComboBox = new GObject.Class({
     Name: 'ClassicGnome.ComboBox',
     Extends: SettingsWidget,*/
-const ComboBox = GObject.registerClass({    
+var ComboBox = GObject.registerClass({    
         GTypeName: 'ClassicGnomeComboBox',
         bind_dir: null
     },
@@ -1056,7 +1056,7 @@ const ComboBox = GObject.registerClass({
                 label: "", options: [], valtype: "string", size_group: null,
                 dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.valtype = params.valtype;
             this.option_map = {};
@@ -1122,10 +1122,10 @@ const ComboBox = GObject.registerClass({
     }
 );
 
-/*const ColorChooser = new GObject.Class({
+/*var ColorChooser = new GObject.Class({
     Name: 'ClassicGnome.ColorChooser',
     Extends: SettingsWidget,*/
-const ColorChooser = GObject.registerClass({    
+var ColorChooser = GObject.registerClass({    
         GTypeName: 'ClassicGnomeColorChooser',
         bind_dir: null
     },
@@ -1134,7 +1134,7 @@ const ColorChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", legacy_string: false, size_group: null, dep_key: null, tooltip: ""
             }); 
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
             // note: Gdk.Color is deprecated in favor of Gdk.RGBA, but as the hex format is still used
             // in some places (most notably the desktop background handling in cinnamon-desktop) we
             // still support it for now by adding the legacy_string argument
@@ -1177,10 +1177,10 @@ const ColorChooser = GObject.registerClass({
     }
 );
 
-/*const FileChooser = new GObject.Class({
+/*var FileChooser = new GObject.Class({
     Name: 'ClassicGnome.FileChooser',
     Extends: SettingsWidget,*/
-const FileChooser = GObject.registerClass({    
+var FileChooser = GObject.registerClass({    
         GTypeName: 'ClassicGnomeFileChooser',
         bind_dir: null
     },
@@ -1189,7 +1189,7 @@ const FileChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", dir_select: false, size_group: null, dep_key: null, tooltip: ""
             }); 
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             if (params.dir_select)
                 action = Gtk.FileChooserAction.SELECT_FOLDER;
@@ -1223,10 +1223,10 @@ const FileChooser = GObject.registerClass({
     }
 );
 
-/*const SoundFileChooser = new GObject.Class({
+/*var SoundFileChooser = new GObject.Class({
     Name: 'ClassicGnome.SoundFileChooser',
     Extends: SettingsWidget,*/
-const SoundFileChooser = GObject.registerClass({    
+var SoundFileChooser = GObject.registerClass({    
         GTypeName: 'ClassicGnomeSoundFileChooser',
         bind_dir: null
     },
@@ -1235,7 +1235,7 @@ const SoundFileChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", size_group: null, dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
             this.content_widget = new Gtk.Box();
@@ -1321,10 +1321,10 @@ const SoundFileChooser = GObject.registerClass({
 );
 
 
-/*const IconChooser = new GObject.Class({
+/*var IconChooser = new GObject.Class({
     Name: 'ClassicGnome.IconChooser',
     Extends: SettingsWidget,*/
-const IconChooser = GObject.registerClass({    
+var IconChooser = GObject.registerClass({    
         GTypeName: 'ClassicGnomeIconChooser',
         bind_prop: "text",
         bind_dir: Gio.SettingsBindFlags.DEFAULT
@@ -1334,7 +1334,7 @@ const IconChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", expand_width: false, size_group: null, dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             let [valid, width, height] = Gtk.icon_size_lookup(Gtk.IconSize.BUTTON);
             this.width = width;
@@ -1442,10 +1442,10 @@ const IconChooser = GObject.registerClass({
 );
 
 
-/*const TweenChooser = new GObject.Class({
+/*var TweenChooser = new GObject.Class({
     Name: 'ClassicGnome.TweenChooser',
     Extends: SettingsWidget,*/
-const TweenChooser = GObject.registerClass({    
+var TweenChooser = GObject.registerClass({    
         GTypeName: 'ClassicGnomeTweenChooser',
         bind_prop: "tween",
         bind_dir: Gio.SettingsBindFlags.DEFAULT
@@ -1455,7 +1455,7 @@ const TweenChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", size_group: null, dep_key: null, tooltip:""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
 
@@ -1472,10 +1472,10 @@ const TweenChooser = GObject.registerClass({
     }
 );
 
-/*const EffectChooser = new GObject.Class({
+/*var EffectChooser = new GObject.Class({
     Name: 'ClassicGnome.EffectChooser',
     Extends: SettingsWidget,*/
-const EffectChooser = GObject.registerClass({    
+var EffectChooser = GObject.registerClass({    
         GTypeName: 'ClassicGnomeEffectChooser',
         bind_prop: "effect",
         bind_dir: Gio.SettingsBindFlags.DEFAULT
@@ -1485,7 +1485,7 @@ const EffectChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", possible: null, size_group: null, dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
 
@@ -1502,10 +1502,10 @@ const EffectChooser = GObject.registerClass({
     }
 );
 
-/*const DateChooser = new GObject.Class({
+/*var DateChooser = new GObject.Class({
     Name: 'ClassicGnome.DateChooser',
     Extends: SettingsWidget,*/
-const DateChooser = GObject.registerClass({    
+var DateChooser = GObject.registerClass({    
         GTypeName: 'ClassicGnomeDateChooser',
         bind_dir: null
     },
@@ -1514,7 +1514,7 @@ const DateChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", size_group: null, dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
 
@@ -1545,10 +1545,10 @@ const DateChooser = GObject.registerClass({
     }
 );
 
-/*const Keybinding = new GObject.Class({
+/*var Keybinding = new GObject.Class({
     Name: 'ClassicGnome.Keybinding',
     Extends: SettingsWidget,*/
-const Keybinding = GObject.registerClass({    
+var Keybinding = GObject.registerClass({    
         GTypeName: 'ClassicGnomeKeybinding',
         bind_dir: null
     },
@@ -1557,7 +1557,7 @@ const Keybinding = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", num_bind: 2, size_group: null, dep_key: null, tooltip: ""
             });
-            super.construct(params.dep_key);
+            super.varruct(params.dep_key);
 
             this.num_bind = params.num_bind;
 
@@ -1615,17 +1615,17 @@ const Keybinding = GObject.registerClass({
 );
 
 
-/*const Button = new GObject.Class({
+/*var Button = new GObject.Class({
     Name: 'ClassicGnome.Button',
     Extends: SettingsWidget,*/
-const Button = GObject.registerClass({   
+var Button = GObject.registerClass({   
         GTypeName: 'ClassicGnomeButton',
         bind_dir: null
     },
     class Button extends SettingsWidget {
         _init(label, callback) {
             //label, callback=null
-            super.construct();
+            super.varruct();
 
             this.label = label;
             this.callback = callback;
@@ -1651,17 +1651,17 @@ const Button = GObject.registerClass({
     }
 );
 
-/*const Text = new GObject.Class({
+/*var Text = new GObject.Class({
     Name: 'ClassicGnome.Text',
     Extends: SettingsWidget,*/
-const Text = GObject.registerClass({    
+var Text = GObject.registerClass({    
         GTypeName: 'ClassicGnomeText',
         bind_dir: null
     },
     class Text extends SettingsWidget {
         _init(label, align) {//align=Gtk.Align.START
             //label, align=Gtk.Align.START
-            super.construct();
+            super.varruct();
 
             this.label = label;
 

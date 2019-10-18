@@ -36,7 +36,7 @@ const EXTENSION_PATH = MyExtension.dir.get_path();
  * Deprecated since 3.2: Binding direction is no longer meaningful. Please do not
  * use in new code.
  */
-const BindingDirection = {
+var BindingDirection = {
     IN : 1,
     OUT : 2,
     BIDIRECTIONAL : 3
@@ -753,7 +753,7 @@ XletSettingsBase.prototype = {
         this.disconnectAll();
     },
 
-    destory: function() {
+    destroy: function() {
         this.finalize();
         this.isReady = false;
         this.bindObject = null;

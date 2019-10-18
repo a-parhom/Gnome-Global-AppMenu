@@ -34,7 +34,7 @@ const JSON_SETTINGS_PROPERTIES_MAP = {
 const JSONSettingsHandler = GObject.registerClass({
         GTypeName: 'ClassicGnomeJSONSettingsHandler'
     },
-    class JSONSettingsHandler {
+    class JSONSettingsHandler extends GObject.Object {
         _init(instance_id, filepath, notify_callback) { //notify_callback=null
             this.resume_timeout = null;
             this.notify_callback = notify_callback;
@@ -125,12 +125,12 @@ const JSONSettingsHandler = GObject.registerClass({
         set_object_value(info, value) {
             if (info.dir & (Gio.SettingsBindFlags.GET == 0))
                 return;
-            with (info["obj"]) {//FIXME: we really don't have that: freeze_notify() freeze_child_notify() ?
+            //with (info["obj"]) {//FIXME: we really don't have that: freeze_notify() freeze_child_notify() ?
                 if (("map_get" in info) && (info["map_get"] != null))
                     value = info["map_get"](value);
                 if (value != info["obj"][info["prop"]])
                     info["obj"][info["prop"]] = value;
-            }
+            //}
         }
 
         check_settings(args) {

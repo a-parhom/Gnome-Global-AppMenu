@@ -43,8 +43,8 @@ const ClassicGnomePreferencesWidget = GObject.registerClass({
         _init(params) {
             super._init(params);
             //this.settings = Convenience.getSettings('org.gnome.shell.extensions.classicGnome');
-            this.modulesManager = new ModulesLoader.ModulesManager(this);
-            this.modulesRequierd = ["get_side_page", "can_load_with_arguments"];
+            this.modulesManager = new ModulesLoader.ModulesManager();
+            this.modulesRequired = ["get_side_page", "can_load_with_arguments"];
             this.module = null;
             this.content_box = new Gtk.Box({
                 orientation: Gtk.Orientation.VERTICAL
@@ -53,7 +53,7 @@ const ClassicGnomePreferencesWidget = GObject.registerClass({
             this.connect('map', Lang.bind(this, this._loadModule));
         }
 
-        navegate(widget, id) {
+        navigate(widget, id) {
             let module = this.modulesManager.getInstance(id);
             if(module) {
                 let sidePage = module.get_side_page([], this.wind, this.content_box);
@@ -74,8 +74,10 @@ const ClassicGnomePreferencesWidget = GObject.registerClass({
             if(!this.module) {
                 try {
                     let modulePath = GLib.build_filenamev([MyExtension.dir.get_path(), 'settings', 'modules']);
-                    this.modulesManager.scan(modulePath, "cg_", this.modulesRequierd);
+                    this.modulesManager.scan(modulePath, "cg_", this.modulesRequired);
+                                    
                     for(let name in this.modulesManager.instances) {
+            global.notify("Error:", name, "dialog-error-symbolic");
                         this.modulesManager.instances[name].set_handler(this);
                     }
                     this.module = this.modulesManager.getInstance("settings");

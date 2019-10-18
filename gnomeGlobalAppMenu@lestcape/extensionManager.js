@@ -350,7 +350,7 @@ MyApplet.prototype = {
          this._menuManager = new ConfigurableMenus.ConfigurableMenuManager(this);
          this._menuManager.addMenu(this._applet_context_menu);
          this.defaultIcon = new St.Icon({ icon_name: "view-app-grid-symbolic", style_class: 'popup-menu-icon' });
-         this.hubProvider = new HudProvider.HudSearchProvider();
+         this.hudProvider = new HudProvider.HudSearchProvider();
          this.hudMenuSearch = new HudSearch.GlobalMenuSearch(this.gradient);
          this._menuManager.addMenu(this.hudMenuSearch);
          this._createSettings();
@@ -387,7 +387,7 @@ MyApplet.prototype = {
              if (this.dbusmenuProviders) {
                  this.indicatorDbus.loadFromString(this.dbusmenuProviders);
              }
-             this.hubProvider.setIndicator(this.indicatorDbus, this.currentWindow);
+             this.hudProvider.setIndicator(this.indicatorDbus, this.currentWindow);
              this.hudMenuSearch.setIndicator(this.indicatorDbus, this.currentWindow);
              if(this._providerId == 0) {
                  this._providerId = this.indicatorDbus.connect('providers-changed', Lang.bind(this, this._onProvidersChanged));
@@ -663,9 +663,9 @@ MyApplet.prototype = {
 
    _onEnableProviderChanged: function() {
        if(this.enableProvider) {
-          this.hubProvider.enable();
+          this.hudProvider.enable();
        } else {
-          this.hubProvider.disable();
+          this.hudProvider.disable();
        }
    },
 
@@ -987,13 +987,13 @@ MyApplet.prototype = {
             this._busyNotifyId = 0;
          }
          this.targetApp = app;
-         /*if (this.targetApp) {
+         if (this.targetApp) {
             this._appMenuNotifyId = this.targetApp.connect('notify::menu', Lang.bind(this, this._onAppMenuNotify));
             this._actionGroupNotifyId = this.targetApp.connect('notify::action-group', Lang.bind(this, this._onAppMenuNotify));
             this._busyNotifyId = this.targetApp.connect('notify::busy', Lang.bind(this, this._onAppMenuNotify));
-         }*/
+         }
       }
-      //this._onAppMenuNotify();
+      this._onAppMenuNotify();
    },
 
    _tryToShow: function(newLabel, newIcon, newMenu) {
@@ -1103,7 +1103,7 @@ MyApplet.prototype = {
       Applet.Applet.prototype.on_applet_added_to_panel.call(this);
       this.keybindingManager.inihibit = false;
       this._onReplaceAppMenuChanged();
-      //this._onShowAppMenuChanged();
+      this._onShowAppMenuChanged();
       this._onAppmenuChanged(this.indicatorDbus, this.currentWindow);
    },
 
@@ -1133,7 +1133,7 @@ MyApplet.prototype = {
          this.indicatorDbus = null;
       }
       this._finalizeEnvironment(Main.sessionMode.allowExtensions);
-      this.hubProvider.destroy();
+      this.hudProvider.destroy();
       this.hudMenuSearch.destroy();
       if (this.currentWindow && (this.currentWindowId != 0)) {
          this.currentWindow.disconnect(this.currentWindowId);
@@ -1170,10 +1170,10 @@ MyApplet.prototype = {
 
       }
       if(this.settings) {
-          this.settings.destory();
+          this.settings.destroy();
           this.settings = null;
       }
-      this.hubProvider = null;
+      this.hudProvider = null;
       this.hudMenuSearch = null;
       this.menu = null;
       this.orientation = null;

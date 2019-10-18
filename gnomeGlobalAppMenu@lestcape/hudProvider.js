@@ -24,7 +24,7 @@ var hudSearchProvider = null;
 /*const HudSearchProvider = new Lang.Class({
     Name: 'HudSearchProvider',*/
 class HudSearchProvider {
-    _init() {
+    constructor() {
         this.id = 'hud';
         this.name = "Gnome Hud";
         this.isEnabled = false;
@@ -34,7 +34,7 @@ class HudSearchProvider {
         this.appData = null;
         this._indicatorId = 0;
         this._focusId = 0;
-        //this._hack();
+        this._hack();
     }
 
     // Hack, I don't know what is doing gnome... A missing function, this is intentional?
@@ -56,14 +56,14 @@ class HudSearchProvider {
     enable() {
         if (!this.isEnabled) {
             this._hackDisplay(true);
-            //Main.overview.addSearchProvider(this);
+            Main.overview.addSearchProvider(this);
             this.isEnabled = true;
         }
     }
 
     disable() {
         if (this.isEnabled) {
-            //Main.overview.removeSearchProvider(this);
+            Main.overview.removeSearchProvider(this);
             this._hackDisplay(false);
             this.isEnabled = false;
         }
@@ -299,7 +299,7 @@ class HubListSearchResult extends Search.SearchResult {
     }
 
     _init(provider, metaInfo) {
-        super._init(provider, metaInfo);
+        super.constructor(provider, metaInfo);
 
         this.actor.style_class = 'list-search-result';
         this.actor.x_fill = true;
@@ -356,7 +356,7 @@ class HubListSearchResult extends Search.SearchResult {
 class HudListSearchResults extends Search.SearchResultsBase {       
 
     _init(provider) {
-        super._init(provider);
+        super.constructor(provider);
 
         this._container = new St.BoxLayout({ style_class: 'search-section-content' });
         this.providerIcon = new HudProviderIcon(provider);
@@ -411,7 +411,7 @@ class HudListSearchResults extends Search.SearchResultsBase {
 
     destroy() {
         if (this.actor) {
-            super._init();
+            super.destroy();
             this.actor = null;
         }
     }

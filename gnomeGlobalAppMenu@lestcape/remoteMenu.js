@@ -64,7 +64,7 @@ class RemoteMenuSeparatorItemMapper {
     Extends: ConfigurableMenus.ConfigurablePopupSubMenuMenuItem,*/
 class RequestSubMenu extends ConfigurableMenus.ConfigurablePopupSubMenuMenuItem {
     _init() {
-        super.construct('');
+        super.constructor('');
         this._requestOpen = false;
     }
 
@@ -107,7 +107,7 @@ class RemoteMenuSubmenuItemMapper {
     destroy() {
         this._tracker.destroy();
         //super._init();
-        super.construct();
+        super.constructor();
     }
 
     _updateLabel() {

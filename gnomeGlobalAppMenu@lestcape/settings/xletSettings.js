@@ -53,9 +53,9 @@ const XLET_SETTINGS_WIDGETS = {
 const XLETSettingsButton = GObject.registerClass({    
         GTypeName: 'ClassicGnomeXLETSettingsButton'
     },
-class XLETSettingsButton extends Gtk.Button {
+    class XLETSettingsButton extends Gtk.Button {
         _init(info, uuid, instance_id, proxy) {
-            super.construct({ label: info.description });
+            super.constructor({ label: info.description });
             this.uuid = uuid;
             this.instance_id = instance_id;
             this.xletCallback = info.callback.toString();
@@ -113,7 +113,7 @@ const XLetSidePage = GObject.registerClass({
     class XLetSidePage extends SettingsWidgets.SidePage {
         _init(argv, window, context_box, module) {
             let keywords = _("extension, settings, configuration");
-            super.construct("Settings", "gnome-settings", keywords, 2, context_box, false, false, "", argv, window, module);
+            super.constructor("Settings", "gnome-settings", keywords, 2, context_box, false, false, "", argv, window, module);
             this.type = "extension";/*argv[1]*/;
             this.uuid = argv[2];
             this.instanceId = argv[3];

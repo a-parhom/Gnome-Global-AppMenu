@@ -246,7 +246,7 @@ const DateChooserButton = GObject.registerClass({
             'date-changed': {
                 flags: GObject.SignalFlags.RUN_LAST,
                 param_types: [ GObject.TYPE_INT, GObject.TYPE_INT, GObject.TYPE_INT ]
-            },
+            }
         }
     },
     class DateChooserButton extends Gtk.Button {
@@ -432,7 +432,7 @@ const EffectMenuItemnone = GObject.registerClass({
     class EffectMenuItemnone extends EffectMenuItem {
         _init() {
             super.construct();
-        },
+        }
 
         draw_preview(context, x, y, color) {
             draw_window(context, x, y, color, 1.);
@@ -496,7 +496,7 @@ const EffectMenuItemblend = GObject.registerClass({
         GTypeName: 'EffectMenuItemblend'
     },
     class EffectMenuItemblend extends EffectMenuItem {
-        _init: function() {
+        _init() {
             super.construct();
         }
 
@@ -586,7 +586,7 @@ const EffectMenuItemflyUp = GObject.registerClass({
         GTypeName: 'ClassicGnomeflyUp'
     },
     class EffectMenuItemflyUp extends EffectMenuItem {
-        _init: function() {
+        _init() {
             super.construct();
         }
 
@@ -613,7 +613,7 @@ const EffectMenuItemflyDown = GObject.registerClass({
         GTypeName: 'EffectMenuItemflyDown'
     },
     class EffectMenuItemflyDown extends EffectMenuItem {
-        _init: function() {
+        _init() {
             super.construct();
         }
 
@@ -704,7 +704,7 @@ const TweenChooserButton = GObject.registerClass({
 const TweenMenuItem = GObject.registerClass({    
         GTypeName: 'ClassicGnomeTweenMenuItem'
     },
-    class extends Gtk.MenuItem {
+    class TweenMenuItem extends Gtk.MenuItem {
         _init(tween_type) {
             super.construct();
 

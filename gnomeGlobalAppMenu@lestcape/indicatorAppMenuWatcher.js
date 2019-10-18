@@ -39,7 +39,7 @@ const FILE_PATH = MyExtension.dir.get_path();
 const WATCHER_INTERFACE = 'com.canonical.AppMenu.Registrar';
 const WATCHER_OBJECT = '/com/canonical/AppMenu/Registrar';
 
-const AppmenuMode = {
+var AppmenuMode = {
    MODE_STANDARD: 0,
    MODE_UNITY: 1,
    MODE_UNITY_ALL_MENUS: 2
