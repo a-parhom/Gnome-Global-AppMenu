@@ -12,14 +12,14 @@ const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 
 const XletSettings = cimports.settings.xletSettings;
-/*
+
 const _ = Gettext.gettext;
 
 var Module = GObject.registerClass({
         GTypeName: 'ModuleSettings'
     },
     
-    class Module extends St.Button {
+    class Module extends GObject.Object {
 
         _init() {
             this.handler = null;
@@ -58,4 +58,3 @@ var Module = GObject.registerClass({
         }
     }
 );
-*/

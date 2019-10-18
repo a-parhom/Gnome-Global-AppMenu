@@ -57,7 +57,7 @@ const ButtonKeybinding = GObject.registerClass({
     },
     class ButtonKeybinding extends Gtk.TreeView {
         _init() {
-            super.construct();
+            super._init();
 
             this.set_headers_visible(false);
             this.set_enable_search(false);
@@ -157,7 +157,7 @@ const CellRendererKeybinding = GObject.registerClass({
     },
     class CellRendererKeybinding extends Gtk.CellRendererText {
         _init(a_widget, accel_string) {
-            super.construct();
+            super._init();
 
             this.connect("editing-started", Lang.bind(this, this.editing_started));
             this.release_event_id = 0;

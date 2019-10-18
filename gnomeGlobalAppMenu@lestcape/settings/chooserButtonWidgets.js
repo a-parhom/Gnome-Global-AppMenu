@@ -45,7 +45,7 @@ const BaseChooserButton = GObject.registerClass({
 
     class BaseChooserButton extends Gtk.Button {
         _init(has_button_label) {//has_button_label=false
-            super.construct();
+            super._init();
             this.set_valign(Gtk.Align.CENTER);
             this.menu = new Gtk.Menu();
             this.button_box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 2 });
@@ -106,7 +106,7 @@ const PictureChooserButton = GObject.registerClass({
     class PictureChooserButton extends BaseChooserButton {
         _init(num_cols, button_picture_size, menu_pictures_size, has_button_label) {
             //num_cols=4, button_picture_size=null, menu_pictures_size=null, has_button_label=false
-            super.construct(has_button_label);
+            super._init(has_button_label);
 
             this.num_cols = num_cols;
             this.button_picture_size = button_picture_size;
@@ -251,7 +251,7 @@ const DateChooserButton = GObject.registerClass({
     },
     class DateChooserButton extends Gtk.Button {
         _init() {
-            super.construct();
+            super._init();
 
             let [year, month, day] = GLib.DateTime.new_now_local().get_ymd();
             this.year = year;
@@ -344,7 +344,7 @@ const EffectMenuItem = GObject.registerClass({
 
     class EffectMenuItem extends Gtk.MenuItem {
         _init() {
-            super.construct();
+            super._init();
             this.effect_type = "none";
             this.animating = false;
             this.timer = null;
@@ -431,7 +431,7 @@ const EffectMenuItemnone = GObject.registerClass({
 
     class EffectMenuItemnone extends EffectMenuItem {
         _init() {
-            super.construct();
+            super._init();
         }
 
         draw_preview(context, x, y, color) {
@@ -449,7 +449,7 @@ const EffectMenuItemscale = GObject.registerClass({
 
     class EffectMenuItemscale extends EffectMenuItem {
         _init() {
-            super.construct();
+            super._init();
         }
 
         draw_preview(context, x, y, color) {
@@ -475,7 +475,7 @@ const fade = GObject.registerClass({
 
     class fade extends EffectMenuItem {
         _init() {
-            super.construct();
+            super._init();
         }
 
         draw_preview(context, x, y, color) {
@@ -497,7 +497,7 @@ const EffectMenuItemblend = GObject.registerClass({
     },
     class EffectMenuItemblend extends EffectMenuItem {
         _init() {
-            super.construct();
+            super._init();
         }
 
         draw_preview(context, x, y, color) {
@@ -523,7 +523,7 @@ const EffectMenuItemtraditional = GObject.registerClass({
     },
     class EffectMenuItemtraditional extends EffectMenuItem {
         _init() {
-            super.construct();
+            super._init();
         }
 
         draw_preview(context, x, y, color) {
@@ -557,7 +557,7 @@ const EffectMenuItemmove = GObject.registerClass({
 
     class EffectMenuItemmove extends EffectMenuItem {
         _init() {
-            super.construct();
+            super._init();
         }
 
         draw_preview(context, x, y, color) {
@@ -587,7 +587,7 @@ const EffectMenuItemflyUp = GObject.registerClass({
     },
     class EffectMenuItemflyUp extends EffectMenuItem {
         _init() {
-            super.construct();
+            super._init();
         }
 
         draw_preview(context, x, y, color) {
@@ -614,7 +614,7 @@ const EffectMenuItemflyDown = GObject.registerClass({
     },
     class EffectMenuItemflyDown extends EffectMenuItem {
         _init() {
-            super.construct();
+            super._init();
         }
 
         draw_preview(context, x, y, color) {
@@ -650,7 +650,7 @@ const TweenChooserButton = GObject.registerClass({
     },
     class TweenChooserButton extends BaseChooserButton {
         _init() {
-            super.construct();
+            super._init();
             this.tween = "";
             this.set_size_request(128, -1);
             this.build_menuitem("None", 0, 0);
@@ -706,7 +706,7 @@ const TweenMenuItem = GObject.registerClass({
     },
     class TweenMenuItem extends Gtk.MenuItem {
         _init(tween_type) {
-            super.construct();
+            super._init();
 
             this.animating = false;
             this.timer = null;
@@ -823,7 +823,7 @@ const EffectChooserButton = GObject.registerClass({
     },
     class EffectChooserButton extends BaseChooserButton {
         _init(effect_styles) {//effect_styles=null
-            super.construct();
+            super._init();
 
             this.effect = "";
             this.effect_styles = (effect_styles == null) ? ["none", "scale"] : effect_styles;

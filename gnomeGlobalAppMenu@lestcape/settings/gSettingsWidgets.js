@@ -151,7 +151,7 @@ const DependencyCheckInstallButton = GObject.registerClass({
 
     class DependencyCheckInstallButton extends Gtk.Box {
         _init(checking_text, install_button_text, binfiles, final_widget, satisfied_cb) {//final_widget=null, satisfied_cb=null
-            super.construct({ orientation: Gtk.Orientation.HORIZONTAL });
+            super._init({ orientation: Gtk.Orientation.HORIZONTAL });
 
             this.binfiles = binfiles;
             this.satisfied_cb = satisfied_cb;
@@ -259,7 +259,7 @@ const GSettingsDependencySwitch = GObject.registerClass({
 
     class GSettingsDependencySwitch extends SettingsWidgets.SettingsWidget {
         _init(label, schema, key, dep_key, binfiles, packages) {// schema=null, key=null, dep_key=null, binfiles=null, packages=null
-            super.construct(dep_key);
+            super._init(dep_key);
 
             this.binfiles = binfiles;
             this.packages = packages;

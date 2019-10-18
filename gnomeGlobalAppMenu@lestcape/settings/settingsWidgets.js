@@ -43,7 +43,7 @@ var EditableEntry = GObject.registerClass({
     },
     class EditableEntry extends Gtk.Stack {
         _init() {
-            super.varruct();
+            super._init();
 
             this.set_transition_type(Gtk.StackTransitionType.CROSSFADE);
             this.set_transition_duration(150);
@@ -354,7 +354,7 @@ var Section = GObject.registerClass({
     },
     class Section extends Gtk.Box {
         _init(name) {
-            super.varruct();
+            super._init();
             this.name = name;
             this.set_orientation(Gtk.Orientation.VERTICAL);
             this.set_border_width(6);
@@ -409,7 +409,7 @@ var SectionBg = GObject.registerClass({
     },
     class SectionBg extends Gtk.Viewport {
         _init() {
-            super.varruct();
+            super._init();
             this.set_shadow_type(Gtk.ShadowType.ETCHED_IN);
             style = this.get_style_context();
             style.add_class("section-bg");
@@ -426,7 +426,7 @@ var SettingsStack = GObject.registerClass({
     },
     class SettingsStack extends Gtk.Stack {
         _init() {
-            super.varruct();
+            super._init();
             this.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT);
             this.set_transition_duration(150);
             this.expand = true;
@@ -442,7 +442,7 @@ var SettingsRevealer = GObject.registerClass({
     },
     class SettingsRevealer extends Gtk.Revealer {
         _init(schema, key, values) {//schema=null, key=null, values=null
-            super.varruct();
+            super._init();
 
             this.box = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, spacing: 15 });
             Gtk.Revealer.prototype.add.call(this, this.box);
@@ -482,7 +482,7 @@ var SettingsPage = GObject.registerClass({
     },
     class SettingsPage extends Gtk.Box {
         _init() {
-            super.varruct();
+            super._init();
             this.set_orientation(Gtk.Orientation.VERTICAL);
             this.set_spacing(15);
             this.set_margin_left(80);
@@ -516,7 +516,7 @@ var SettingsBox = GObject.registerClass({
     },
     class SettingsBox extends Gtk.Frame {
         _init(title) { 
-            super.varruct();
+            super._init();
             this.set_shadow_type(Gtk.ShadowType.IN);
             let frame_style = this.get_style_context();
             frame_style.add_class("view");
@@ -612,7 +612,7 @@ var SettingsWidget = GObject.registerClass({
     },
     class SettingsWidget extends Gtk.Box {
         _init(dep_key) { //dep_key=null
-            super.varruct();
+            super._init();
             this.set_orientation(Gtk.Orientation.HORIZONTAL);
             this.set_spacing(20);
             this.set_border_width(5);
@@ -658,6 +658,10 @@ var SettingsWidget = GObject.registerClass({
         get_value() {
            return null;
         }
+
+        on_setting_changed(args) {}
+
+        connect_widget_handlers(args) {}
     }
 );
 
@@ -669,7 +673,7 @@ var SettingsLabel = GObject.registerClass({
     },
     class SettingsLabel extends Gtk.Label {
         _init(text) { //text=null
-            super.varruct();
+            super._init();
             if (text) {
                 this.set_label(text);
             }
@@ -693,7 +697,7 @@ var IndentedHBox = GObject.registerClass({
     },
     class IndentedHBox extends Gtk.HBox {
         _init() {
-            super.varruct();
+            super._init();
             indent = new Gtk.Label({ label: "\t" });
             this.pack_start(indent, false, false, 0);
         }
@@ -719,7 +723,7 @@ var Switch = GObject.registerClass({
     class Switch extends SettingsWidget {
         _init(params) {
             params = Params.parse(params, { label: "", dep_key: null, tooltip: "" });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
             this.content_widget = new Gtk.Switch();
             this.label = new SettingsLabel(params.label);
             this.pack_start(this.label, false, false, 0);
@@ -756,7 +760,7 @@ var SpinButton = GObject.registerClass({
                 label: "", units: "", mini: null, maxi: null, step: 1,
                 page: null, size_group: null, dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.timer = null;
 
@@ -826,7 +830,7 @@ var Entry = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", expand_width: false, size_group: null, dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
             this.content_widget = new Gtk.Entry();
@@ -864,7 +868,7 @@ var TextView = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", height: 200, dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.set_orientation(Gtk.Orientation.VERTICAL);
             this.set_spacing(8);
@@ -906,7 +910,7 @@ var FontButton = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", size_group: null, dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
 
@@ -938,7 +942,7 @@ var Range = GObject.registerClass({
                 label: "", min_label: "", max_label: "", mini: null, maxi: null,
                 step: null, invert: false, log: false, dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.set_orientation(Gtk.Orientation.VERTICAL);
             this.set_spacing(0);
@@ -1056,7 +1060,7 @@ var ComboBox = GObject.registerClass({
                 label: "", options: [], valtype: "string", size_group: null,
                 dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.valtype = params.valtype;
             this.option_map = {};
@@ -1134,7 +1138,7 @@ var ColorChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", legacy_string: false, size_group: null, dep_key: null, tooltip: ""
             }); 
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
             // note: Gdk.Color is deprecated in favor of Gdk.RGBA, but as the hex format is still used
             // in some places (most notably the desktop background handling in cinnamon-desktop) we
             // still support it for now by adding the legacy_string argument
@@ -1189,7 +1193,7 @@ var FileChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", dir_select: false, size_group: null, dep_key: null, tooltip: ""
             }); 
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             if (params.dir_select)
                 action = Gtk.FileChooserAction.SELECT_FOLDER;
@@ -1235,7 +1239,7 @@ var SoundFileChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", size_group: null, dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
             this.content_widget = new Gtk.Box();
@@ -1334,7 +1338,7 @@ var IconChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", expand_width: false, size_group: null, dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             let [valid, width, height] = Gtk.icon_size_lookup(Gtk.IconSize.BUTTON);
             this.width = width;
@@ -1455,7 +1459,7 @@ var TweenChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", size_group: null, dep_key: null, tooltip:""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
 
@@ -1485,7 +1489,7 @@ var EffectChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", possible: null, size_group: null, dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
 
@@ -1514,7 +1518,7 @@ var DateChooser = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", size_group: null, dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.label = new SettingsLabel(params.label);
 
@@ -1557,7 +1561,7 @@ var Keybinding = GObject.registerClass({
             params = Params.parse(params, {
                 label: "", num_bind: 2, size_group: null, dep_key: null, tooltip: ""
             });
-            super.varruct(params.dep_key);
+            super._init(params.dep_key);
 
             this.num_bind = params.num_bind;
 
@@ -1625,7 +1629,7 @@ var Button = GObject.registerClass({
     class Button extends SettingsWidget {
         _init(label, callback) {
             //label, callback=null
-            super.varruct();
+            super._init();
 
             this.label = label;
             this.callback = callback;
@@ -1661,7 +1665,7 @@ var Text = GObject.registerClass({
     class Text extends SettingsWidget {
         _init(label, align) {//align=Gtk.Align.START
             //label, align=Gtk.Align.START
-            super.varruct();
+            super._init();
 
             this.label = label;
 

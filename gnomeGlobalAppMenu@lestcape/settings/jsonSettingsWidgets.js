@@ -10,6 +10,7 @@ const GLib = imports.gi.GLib;
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
+const ByteArray = imports.byteArray;
 
 const SettingsWidgets = cimports.settings.settingsWidgets;
 
@@ -164,7 +165,7 @@ const JSONSettingsHandler = GObject.registerClass({
             if (jsonFile.query_exists(null)) {
                 let [ok, raw_data] = GLib.file_get_contents(jsonFile.get_path());
                 try {
-                    let settings = JSON.parse(raw_data);//, encoding=null, object_pairs_hook=collections.OrderedDict
+                    let settings = JSON.parse(ByteArray.toString(raw_data));//, encoding=null, object_pairs_hook=collections.OrderedDict
                     return settings;
                 } catch(e) {
                     throw Error("Failed to parse settings JSON data for file %s".format(this.filepath));
@@ -307,7 +308,7 @@ function json_settings_factory(subclass) {
                     }
                 }
                 kwargs.label = properties.description;
-                super.construct(kwargs);
+                super._init(kwargs);
                 // ... need to check state setting syntax for other classes, and add them here.
                 this.attach();
             }

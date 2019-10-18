@@ -60,7 +60,7 @@ ModulesManager.prototype = {
                     if(this._satisficeRequieriments(instance, requiered)) {
                         this.instances[name] = instance;
                         print("Loaded module: " + name + "\n");
-                        global.notify("Error:", "Loaded module: " + name, "dialog-error-symbolic");
+                        //global.notify("Error:", "Loaded module: " + name, "dialog-error-symbolic");
                     }
                 }
             } catch(e) {

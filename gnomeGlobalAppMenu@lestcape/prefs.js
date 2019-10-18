@@ -77,7 +77,6 @@ const ClassicGnomePreferencesWidget = GObject.registerClass({
                     this.modulesManager.scan(modulePath, "cg_", this.modulesRequired);
                                     
                     for(let name in this.modulesManager.instances) {
-            global.notify("Error:", name, "dialog-error-symbolic");
                         this.modulesManager.instances[name].set_handler(this);
                     }
                     this.module = this.modulesManager.getInstance("settings");

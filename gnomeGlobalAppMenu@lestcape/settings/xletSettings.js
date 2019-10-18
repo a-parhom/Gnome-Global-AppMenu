@@ -4,18 +4,20 @@
  * ========================================================================================================
  */
 
-const Lang = imports.lang;
-const Gettext = imports.gettext;
-const Gio = imports.gi.Gio;
-const GLib = imports.gi.GLib;
-const GObject = imports.gi.GObject;
-const Gtk = imports.gi.Gtk;
+var Lang = imports.lang;
+var Gettext = imports.gettext;
+var Gio = imports.gi.Gio;
+var GLib = imports.gi.GLib;
+var GObject = imports.gi.GObject;
+var Gtk = imports.gi.Gtk;
 
-const SettingsWidgets = cimports.settings.settingsWidgets;
-const JsonSettingsWidgets = cimports.settings.jsonSettingsWidgets;
-const Config = cimports.settings.config;
+const ByteArray = imports.byteArray;
 
-const MyExtension = imports.misc.extensionUtils.getCurrentExtension();
+var SettingsWidgets = cimports.settings.settingsWidgets;
+var JsonSettingsWidgets = cimports.settings.jsonSettingsWidgets;
+var Config = cimports.settings.config;
+
+var MyExtension = imports.misc.extensionUtils.getCurrentExtension();
 function _(str) {
     let resultConf = Gettext.dgettext(MyExtension.uuid, str);
     if(resultConf != str) {
@@ -24,10 +26,10 @@ function _(str) {
     return Gettext.gettext(str);
 };
 
-const home = GLib.get_home_dir();
-const translations = {};
+var home = GLib.get_home_dir();
+var translations = {};
 
-const XLET_SETTINGS_WIDGETS = {
+var XLET_SETTINGS_WIDGETS = {
     "entry"             :   "JSONSettingsEntry",
     "textview"          :   "JSONSettingsTextView",
     "checkbox"          :   "JSONSettingsSwitch", // deprecated: please use switch instead
@@ -47,15 +49,15 @@ const XLET_SETTINGS_WIDGETS = {
     "keybinding"        :   "JSONSettingsKeybinding"
 };
 
-/*const XLETSettingsButton = new GObject.Class({
+/*var XLETSettingsButton = new GObject.Class({
     Name: 'ClassicGnome.XLETSettingsButton',
     Extends: Gtk.Button,*/
-const XLETSettingsButton = GObject.registerClass({    
+var XLETSettingsButton = GObject.registerClass({    
         GTypeName: 'ClassicGnomeXLETSettingsButton'
     },
     class XLETSettingsButton extends Gtk.Button {
         _init(info, uuid, instance_id, proxy) {
-            super.constructor({ label: info.description });
+            super._init({ label: info.description });
             this.uuid = uuid;
             this.instance_id = instance_id;
             this.xletCallback = info.callback.toString();
@@ -104,16 +106,16 @@ function translate(uuid, string) {
     return _(string);
 }
 
-/*const XLetSidePage = new GObject.Class({
+/*var XLetSidePage = new GObject.Class({
     Name: 'ClassicGnome.XLetSidePage',
     Extends: SettingsWidgets.SidePage,*/
-const XLetSidePage = GObject.registerClass({    
+var XLetSidePage = GObject.registerClass({    
         GTypeName: 'ClassicGnomeXLetSidePage'
     },
     class XLetSidePage extends SettingsWidgets.SidePage {
         _init(argv, window, context_box, module) {
             let keywords = _("extension, settings, configuration");
-            super.constructor("Settings", "gnome-settings", keywords, 2, context_box, false, false, "", argv, window, module);
+            super._init("Settings", "gnome-settings", keywords, 2, context_box, false, false, "", argv, window, module);
             this.type = "extension";/*argv[1]*/;
             this.uuid = argv[2];
             this.instanceId = argv[3];
@@ -168,7 +170,7 @@ const XLetSidePage = GObject.registerClass({
             let jsonFile = Gio.file_new_for_path("%s/metadata.json".format(this.xlet_dir));
             if (jsonFile.query_exists(null)) {
                 let [ok, raw_data] = GLib.file_get_contents(jsonFile.get_path());
-                this.xlet_meta = JSON.parse(raw_data);
+                this.xlet_meta = JSON.parse(ByteArray.toString(raw_data));
             } else {
                 let error = "Could not find %s metadata for uuid %s - are you sure it's installed correctly?".format(this.type, this.uuid);
                 global.logError(error);
