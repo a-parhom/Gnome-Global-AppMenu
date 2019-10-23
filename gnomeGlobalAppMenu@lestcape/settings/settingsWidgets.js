@@ -196,10 +196,10 @@ var SidePage = GObject.registerClass({
 
                 // Add our own widgets
                 for (let pos in this.widgets) {
-                    if (this.widgets[pos].hasOwnProperty('expand'))
+                    //if (this.widgets[pos].hasOwnProperty('expand'))
                         this.content_box.pack_start(this.widgets[pos], true, true, 2);
-                    else
-                        this.content_box.pack_start(this.widgets[pos], false, false, 2);
+                    //else
+                    //    this.content_box.pack_start(this.widgets[pos], false, false, 2);
                 }
 
                 // C modules are sort of messy - they check the desktop type
@@ -256,7 +256,7 @@ var SidePage = GObject.registerClass({
             }
         }
 
-        request_navegation(id) {
+        request_navigation(id) {
             if(this.module && this.module.handler)
                  this.module.handler.navigate(this, id);
         }

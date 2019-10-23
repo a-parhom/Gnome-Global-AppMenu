@@ -617,11 +617,11 @@ MyApplet.prototype = {
             let index = children.indexOf(Main.panel.statusArea.appMenu.container);
             if(index != -1) {
                Main.panel.statusArea.appMenu.menu = null;
-               if(Main.panel.statusArea.appMenu.actor) {
+               //if(Main.panel.statusArea.appMenu.actor) {
                   // This crash in the container actor, but it will be fixed
                   // as recenlty versions of the shell have not a container.
                   Main.panel.statusArea.appMenu.destroy();
-               }
+               //}
                //Main.panel.statusArea['appMenu'] = null;
                // Fake appmenu, to avoid the gnome shell behavior.
                Main.panel.statusArea['appMenu'] = new St.Bin();
